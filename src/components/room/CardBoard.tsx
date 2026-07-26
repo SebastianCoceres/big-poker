@@ -72,7 +72,18 @@ export function CardBoard({
 					</button>
 				</p>
 			)}
-			<div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2">
+			{/* Edge fade signals there are more cards to scroll to — a flat cut
+			    at the container edge gave no hint that `21, 34, 55, 89, ?, ☕`
+			    exist past the fold. */}
+			<div
+				className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2"
+				style={{
+					maskImage:
+						"linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent)",
+					WebkitMaskImage:
+						"linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent)",
+				}}
+			>
 				{CARD_VALUES.map((card) => {
 					const isSelected = myVote === card;
 					return (

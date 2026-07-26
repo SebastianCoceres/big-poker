@@ -47,6 +47,7 @@ export type RoomErrorCode =
 	| "ROOM_NOT_FOUND"
 	| "NOT_MASTER"
 	| "INVALID_NAME"
+	| "NAME_TAKEN"
 	| "INVALID_QUESTION"
 	| "INVALID_VOTE"
 	| "STALE_ROUND"
@@ -103,6 +104,21 @@ function cleanText(value: string, maxLength: number): string | null {
 	const trimmed = value.trim();
 	if (trimmed.length < 1 || trimmed.length > maxLength) return null;
 	return trimmed;
+}
+
+// Case-insensitive so "Ana" and "ana" still collide — two people with the
+// same display name are indistinguishable once votes are revealed.
+function isNameTaken(
+	room: Room,
+	name: string,
+	excludeParticipantId: string,
+): boolean {
+	const normalized = name.toLowerCase();
+	for (const p of room.participants.values()) {
+		if (p.id === excludeParticipantId) continue;
+		if (p.name.toLowerCase() === normalized) return true;
+	}
+	return false;
 }
 
 export function getRoom(code: string): Room | undefined {
@@ -263,6 +279,9 @@ export function joinRoom(
 
 	const cleanName = cleanText(name, 30);
 	if (!cleanName) return { ok: false, error: "INVALID_NAME" };
+	if (isNameTaken(room, cleanName, participantId)) {
+		return { ok: false, error: "NAME_TAKEN" };
+	}
 
 	const existing = room.participants.get(participantId);
 	if (existing) {

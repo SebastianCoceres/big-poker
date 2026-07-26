@@ -54,9 +54,11 @@ export default function ThemeToggle() {
 		};
 	}, [mode]);
 
+	// Auto leads the cycle (the common convention for a 3-state theme
+	// toggle): Auto -> Light -> Dark -> Auto.
 	function toggleMode() {
 		const nextMode: ThemeMode =
-			mode === "light" ? "dark" : mode === "dark" ? "auto" : "light";
+			mode === "auto" ? "light" : mode === "light" ? "dark" : "auto";
 		setMode(nextMode);
 		applyThemeMode(nextMode);
 		window.localStorage.setItem("theme", nextMode);

@@ -1,5 +1,10 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Scripts,
+	useRouterState,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -19,7 +24,7 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "Planning Poker",
+				title: "BigPoker",
 			},
 		],
 		links: [
@@ -33,6 +38,14 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	// The room route owns a fixed bottom bar (ParticipantBar) with no space
+	// reserved for a global marketing footer — hide it there instead of
+	// letting the two overlap.
+	const pathname = useRouterState({
+		select: (state) => state.location.pathname,
+	});
+	const hideFooter = pathname.startsWith("/room/");
+
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
@@ -42,7 +55,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
 				<Header />
 				{children}
-				<Footer />
+				{!hideFooter && <Footer />}
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

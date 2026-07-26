@@ -7,6 +7,8 @@ function errorMessage(error: RoomErrorCode): string {
 	switch (error) {
 		case "INVALID_NAME":
 			return "Escribí un nombre válido (1 a 30 caracteres).";
+		case "NAME_TAKEN":
+			return "Ya hay alguien en la sala con ese nombre. Probá agregar tu inicial o apellido.";
 		case "ROOM_NOT_FOUND":
 			return "Esta sala no existe o ya no está disponible.";
 		default:

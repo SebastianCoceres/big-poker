@@ -9,6 +9,19 @@ function storageKey(code: string): string {
 	return `bigpoker:room:${code}:me`;
 }
 
+// Separate from the per-room identity above: a "profile" name asked once on
+// Home, before any room exists, so returning visitors skip straight to
+// choosing create/join.
+const DISPLAY_NAME_KEY = "bigpoker:displayName";
+
+export function readDisplayName(): string | null {
+	return window.localStorage.getItem(DISPLAY_NAME_KEY);
+}
+
+export function writeDisplayName(name: string): void {
+	window.localStorage.setItem(DISPLAY_NAME_KEY, name);
+}
+
 export function readParticipantIdentity(
 	code: string,
 ): ParticipantIdentity | null {

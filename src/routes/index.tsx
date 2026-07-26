@@ -1,6 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { type FormEvent, useState } from "react";
-import { writeParticipantIdentity } from "#/hooks/useParticipantIdentity";
+import { type FormEvent, useEffect, useState } from "react";
+import {
+	readDisplayName,
+	writeDisplayName,
+	writeParticipantIdentity,
+} from "#/hooks/useParticipantIdentity";
 import { normalizeRoomCode } from "#/lib/room-code";
 import { createRoomFn, joinRoomFn } from "#/server/rooms.functions";
 import type { RoomErrorCode } from "#/server/rooms.server";
@@ -11,6 +15,8 @@ function errorMessage(error: RoomErrorCode): string {
 	switch (error) {
 		case "INVALID_NAME":
 			return "Escribí un nombre válido (1 a 30 caracteres).";
+		case "NAME_TAKEN":
+			return "Ya hay alguien en la sala con ese nombre. Probá agregar tu inicial o apellido.";
 		case "ROOM_NOT_FOUND":
 			return "No encontramos una sala con ese código. Revisá que esté bien escrito.";
 		case "ROOM_CODE_EXHAUSTED":
@@ -20,26 +26,56 @@ function errorMessage(error: RoomErrorCode): string {
 	}
 }
 
+type Step = "name" | "choose" | "join";
+
 function Home() {
 	const navigate = useNavigate();
 
-	const [createName, setCreateName] = useState("");
+	// Starts on "name" so SSR (no localStorage) and the client's first paint
+	// match; the effect below jumps straight to "choose" for a returning
+	// visitor who already has a saved display name.
+	const [hydrated, setHydrated] = useState(false);
+	const [step, setStep] = useState<Step>("name");
+	const [displayName, setDisplayNameState] = useState("");
+	const [nameInput, setNameInput] = useState("");
+
+	useEffect(() => {
+		const saved = readDisplayName();
+		if (saved) {
+			setDisplayNameState(saved);
+			setStep("choose");
+		}
+		setHydrated(true);
+	}, []);
+
 	const [creating, setCreating] = useState(false);
 	const [createError, setCreateError] = useState<string | null>(null);
 
 	const [joinCode, setJoinCode] = useState("");
-	const [joinName, setJoinName] = useState("");
 	const [joining, setJoining] = useState(false);
 	const [joinError, setJoinError] = useState<string | null>(null);
 
-	async function handleCreate(event: FormEvent<HTMLFormElement>) {
+	function handleConfirmName(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		const trimmed = nameInput.trim();
+		if (!trimmed) return;
+		writeDisplayName(trimmed);
+		setDisplayNameState(trimmed);
+		setStep("choose");
+	}
+
+	function handleChangeName() {
+		setNameInput(displayName);
+		setStep("name");
+	}
+
+	async function handleCreate() {
 		setCreateError(null);
 		setCreating(true);
 		try {
 			const participantId = crypto.randomUUID();
 			const result = await createRoomFn({
-				data: { participantId, name: createName },
+				data: { participantId, name: displayName },
 			});
 			if (!result.ok) {
 				setCreateError(errorMessage(result.error));
@@ -47,7 +83,7 @@ function Home() {
 			}
 			writeParticipantIdentity(result.data.code, {
 				participantId,
-				name: createName.trim(),
+				name: displayName,
 			});
 			navigate({
 				to: "/room/$roomCode",
@@ -68,7 +104,7 @@ function Home() {
 		try {
 			const participantId = crypto.randomUUID();
 			const result = await joinRoomFn({
-				data: { code, participantId, name: joinName },
+				data: { code, participantId, name: displayName },
 			});
 			if (!result.ok) {
 				setJoinError(errorMessage(result.error));
@@ -76,7 +112,7 @@ function Home() {
 			}
 			writeParticipantIdentity(code, {
 				participantId,
-				name: joinName.trim(),
+				name: displayName,
 			});
 			navigate({ to: "/room/$roomCode", params: { roomCode: code } });
 		} catch {
@@ -86,57 +122,86 @@ function Home() {
 		}
 	}
 
+	// Avoids flashing the name step for a returning visitor before the
+	// localStorage read above resolves.
+	if (!hydrated) return null;
+
 	return (
-		<main className="page-wrap px-4 pb-8 pt-14">
-			<section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
-				<div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-				<div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
-				<p className="island-kicker mb-3">Planning Poker</p>
-				<h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
+		<main className="page-wrap flex min-h-[calc(100vh-9rem)] flex-col items-center justify-center gap-6 px-4 py-14">
+			<div className="rise-in max-w-md text-center">
+				<p className="island-kicker mb-2">BigPoker</p>
+				<h1 className="demo-title text-3xl sm:text-4xl">
 					Estimá en equipo, sin fricción.
 				</h1>
-				<p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-					Creá una sala o unite con un código. Pensado para reuniones
-					presenciales: todo pasa en tiempo real, sin cuentas ni instalaciones.
-				</p>
-			</section>
+				{step === "name" && (
+					<p className="demo-muted mt-2 text-sm">
+						Sin cuentas, sin instalaciones. Empecemos con tu nombre.
+					</p>
+				)}
+			</div>
 
-			<section className="mt-8 grid gap-6 sm:grid-cols-2">
+			{step === "name" && (
 				<form
-					onSubmit={handleCreate}
-					className="demo-panel rise-in flex flex-col gap-4"
+					onSubmit={handleConfirmName}
+					className="demo-panel rise-in flex w-full max-w-md flex-col gap-4"
 				>
-					<div>
-						<h2 className="demo-section-title mb-1">Crear sala</h2>
-						<p className="demo-muted text-sm">
-							Vas a ser el master: escribís las preguntas y controlás la ronda.
-						</p>
-					</div>
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Tu nombre
 						<input
 							className="demo-input"
-							value={createName}
-							onChange={(e) => setCreateName(e.target.value)}
+							value={nameInput}
+							onChange={(e) => setNameInput(e.target.value)}
 							maxLength={30}
 							required
 							placeholder="Ej: Sebastián"
 						/>
 					</label>
+					<button type="submit" className="demo-button">
+						Continuar
+					</button>
+				</form>
+			)}
+
+			{step === "choose" && (
+				<div className="demo-panel rise-in flex w-full max-w-md flex-col gap-4">
+					<p className="demo-muted text-sm">
+						Hola,{" "}
+						<strong className="text-[var(--sea-ink)]">{displayName}</strong>.
+					</p>
 					{createError && (
 						<p className="demo-alert demo-alert-danger text-sm">
 							{createError}
 						</p>
 					)}
-					<button type="submit" className="demo-button" disabled={creating}>
+					<button
+						type="button"
+						onClick={handleCreate}
+						className="demo-button"
+						disabled={creating}
+					>
 						{creating ? "Creando..." : "Crear sala"}
 					</button>
-				</form>
+					<button
+						type="button"
+						onClick={() => setStep("join")}
+						className="demo-button demo-button-secondary"
+					>
+						Unirse a sala
+					</button>
+					<button
+						type="button"
+						onClick={handleChangeName}
+						className="text-sm font-semibold text-[var(--lagoon-deep)] underline decoration-[rgba(50,143,151,0.4)] underline-offset-4 transition hover:text-[#246f76]"
+					>
+						¿No sos vos? Cambiar nombre
+					</button>
+				</div>
+			)}
 
+			{step === "join" && (
 				<form
 					onSubmit={handleJoin}
-					className="demo-panel rise-in flex flex-col gap-4"
-					style={{ animationDelay: "80ms" }}
+					className="demo-panel rise-in flex w-full max-w-md flex-col gap-4"
 				>
 					<div>
 						<h2 className="demo-section-title mb-1">Unirse a sala</h2>
@@ -155,17 +220,6 @@ function Home() {
 							placeholder="Ej: 7F3KQD"
 						/>
 					</label>
-					<label className="flex flex-col gap-1 text-sm font-semibold">
-						Tu nombre
-						<input
-							className="demo-input"
-							value={joinName}
-							onChange={(e) => setJoinName(e.target.value)}
-							maxLength={30}
-							required
-							placeholder="Ej: Fede"
-						/>
-					</label>
 					{joinError && (
 						<p className="demo-alert demo-alert-danger text-sm">{joinError}</p>
 					)}
@@ -176,8 +230,15 @@ function Home() {
 					>
 						{joining ? "Uniéndote..." : "Unirse a sala"}
 					</button>
+					<button
+						type="button"
+						onClick={() => setStep("choose")}
+						className="text-sm font-semibold text-[var(--sea-ink-soft)] underline underline-offset-4"
+					>
+						Volver
+					</button>
 				</form>
-			</section>
+			)}
 		</main>
 	);
 }
