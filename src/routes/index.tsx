@@ -1,87 +1,183 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { type FormEvent, useState } from "react";
+import { writeParticipantIdentity } from "#/hooks/useParticipantIdentity";
+import { normalizeRoomCode } from "#/lib/room-code";
+import { createRoomFn, joinRoomFn } from "#/server/rooms.functions";
+import type { RoomErrorCode } from "#/server/rooms.server";
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute("/")({ component: Home });
 
-function App() {
-  return (
-    <main className="page-wrap px-4 pb-8 pt-14">
-      <section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
-        <div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
-        <p className="island-kicker mb-3">TanStack Start Base Template</p>
-        <h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
-          Start simple, ship quickly.
-        </h1>
-        <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          This base starter intentionally keeps things light: two routes, clean
-          structure, and the essentials you need to build from scratch.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="/about"
-            className="rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]"
-          >
-            About This Starter
-          </a>
-          <a
-            href="https://tanstack.com/router"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]"
-          >
-            Router Guide
-          </a>
-        </div>
-      </section>
+function errorMessage(error: RoomErrorCode): string {
+	switch (error) {
+		case "INVALID_NAME":
+			return "Escribí un nombre válido (1 a 30 caracteres).";
+		case "ROOM_NOT_FOUND":
+			return "No encontramos una sala con ese código. Revisá que esté bien escrito.";
+		case "ROOM_CODE_EXHAUSTED":
+			return "No pudimos generar un código de sala. Probá de nuevo.";
+		default:
+			return "Ocurrió un error inesperado. Probá de nuevo.";
+	}
+}
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          [
-            'Type-Safe Routing',
-            'Routes and links stay in sync across every page.',
-          ],
-          [
-            'Server Functions',
-            'Call server code from your UI without creating API boilerplate.',
-          ],
-          [
-            'Streaming by Default',
-            'Ship progressively rendered responses for faster experiences.',
-          ],
-          [
-            'Tailwind Native',
-            'Design quickly with utility-first styling and reusable tokens.',
-          ],
-        ].map(([title, desc], index) => (
-          <article
-            key={title}
-            className="island-shell feature-card rise-in rounded-2xl p-5"
-            style={{ animationDelay: `${index * 90 + 80}ms` }}
-          >
-            <h2 className="mb-2 text-base font-semibold text-[var(--sea-ink)]">
-              {title}
-            </h2>
-            <p className="m-0 text-sm text-[var(--sea-ink-soft)]">{desc}</p>
-          </article>
-        ))}
-      </section>
+function Home() {
+	const navigate = useNavigate();
 
-      <section className="island-shell mt-8 rounded-2xl p-6">
-        <p className="island-kicker mb-2">Quick Start</p>
-        <ul className="m-0 list-disc space-y-2 pl-5 text-sm text-[var(--sea-ink-soft)]">
-          <li>
-            Edit <code>src/routes/index.tsx</code> to customize the home page.
-          </li>
-          <li>
-            Update <code>src/components/Header.tsx</code> and{' '}
-            <code>src/components/Footer.tsx</code> for brand links.
-          </li>
-          <li>
-            Add routes in <code>src/routes</code> and tweak visual tokens in{' '}
-            <code>src/styles.css</code>.
-          </li>
-        </ul>
-      </section>
-    </main>
-  )
+	const [createName, setCreateName] = useState("");
+	const [creating, setCreating] = useState(false);
+	const [createError, setCreateError] = useState<string | null>(null);
+
+	const [joinCode, setJoinCode] = useState("");
+	const [joinName, setJoinName] = useState("");
+	const [joining, setJoining] = useState(false);
+	const [joinError, setJoinError] = useState<string | null>(null);
+
+	async function handleCreate(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setCreateError(null);
+		setCreating(true);
+		try {
+			const participantId = crypto.randomUUID();
+			const result = await createRoomFn({
+				data: { participantId, name: createName },
+			});
+			if (!result.ok) {
+				setCreateError(errorMessage(result.error));
+				return;
+			}
+			writeParticipantIdentity(result.data.code, {
+				participantId,
+				name: createName.trim(),
+			});
+			navigate({
+				to: "/room/$roomCode",
+				params: { roomCode: result.data.code },
+			});
+		} catch {
+			setCreateError("No pudimos crear la sala. Probá de nuevo.");
+		} finally {
+			setCreating(false);
+		}
+	}
+
+	async function handleJoin(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setJoinError(null);
+		setJoining(true);
+		const code = normalizeRoomCode(joinCode);
+		try {
+			const participantId = crypto.randomUUID();
+			const result = await joinRoomFn({
+				data: { code, participantId, name: joinName },
+			});
+			if (!result.ok) {
+				setJoinError(errorMessage(result.error));
+				return;
+			}
+			writeParticipantIdentity(code, {
+				participantId,
+				name: joinName.trim(),
+			});
+			navigate({ to: "/room/$roomCode", params: { roomCode: code } });
+		} catch {
+			setJoinError("No pudimos unirte a la sala. Probá de nuevo.");
+		} finally {
+			setJoining(false);
+		}
+	}
+
+	return (
+		<main className="page-wrap px-4 pb-8 pt-14">
+			<section className="island-shell rise-in relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-10 sm:py-14">
+				<div className="pointer-events-none absolute -left-20 -top-24 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(79,184,178,0.32),transparent_66%)]" />
+				<div className="pointer-events-none absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(47,106,74,0.18),transparent_66%)]" />
+				<p className="island-kicker mb-3">Planning Poker</p>
+				<h1 className="display-title mb-5 max-w-3xl text-4xl leading-[1.02] font-bold tracking-tight text-[var(--sea-ink)] sm:text-6xl">
+					Estimá en equipo, sin fricción.
+				</h1>
+				<p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
+					Creá una sala o unite con un código. Pensado para reuniones
+					presenciales: todo pasa en tiempo real, sin cuentas ni instalaciones.
+				</p>
+			</section>
+
+			<section className="mt-8 grid gap-6 sm:grid-cols-2">
+				<form
+					onSubmit={handleCreate}
+					className="demo-panel rise-in flex flex-col gap-4"
+				>
+					<div>
+						<h2 className="demo-section-title mb-1">Crear sala</h2>
+						<p className="demo-muted text-sm">
+							Vas a ser el master: escribís las preguntas y controlás la ronda.
+						</p>
+					</div>
+					<label className="flex flex-col gap-1 text-sm font-semibold">
+						Tu nombre
+						<input
+							className="demo-input"
+							value={createName}
+							onChange={(e) => setCreateName(e.target.value)}
+							maxLength={30}
+							required
+							placeholder="Ej: Sebastián"
+						/>
+					</label>
+					{createError && (
+						<p className="demo-alert demo-alert-danger text-sm">
+							{createError}
+						</p>
+					)}
+					<button type="submit" className="demo-button" disabled={creating}>
+						{creating ? "Creando..." : "Crear sala"}
+					</button>
+				</form>
+
+				<form
+					onSubmit={handleJoin}
+					className="demo-panel rise-in flex flex-col gap-4"
+					style={{ animationDelay: "80ms" }}
+				>
+					<div>
+						<h2 className="demo-section-title mb-1">Unirse a sala</h2>
+						<p className="demo-muted text-sm">
+							Pedile el código al master de la sala.
+						</p>
+					</div>
+					<label className="flex flex-col gap-1 text-sm font-semibold">
+						Código de sala
+						<input
+							className="demo-input uppercase tracking-[0.2em]"
+							value={joinCode}
+							onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+							maxLength={6}
+							required
+							placeholder="Ej: 7F3KQD"
+						/>
+					</label>
+					<label className="flex flex-col gap-1 text-sm font-semibold">
+						Tu nombre
+						<input
+							className="demo-input"
+							value={joinName}
+							onChange={(e) => setJoinName(e.target.value)}
+							maxLength={30}
+							required
+							placeholder="Ej: Fede"
+						/>
+					</label>
+					{joinError && (
+						<p className="demo-alert demo-alert-danger text-sm">{joinError}</p>
+					)}
+					<button
+						type="submit"
+						className="demo-button demo-button-secondary"
+						disabled={joining}
+					>
+						{joining ? "Uniéndote..." : "Unirse a sala"}
+					</button>
+				</form>
+			</section>
+		</main>
+	);
 }

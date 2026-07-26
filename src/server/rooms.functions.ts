@@ -1,0 +1,77 @@
+import { createServerFn } from "@tanstack/react-start";
+import type { CardValue } from "#/lib/fibonacci";
+import {
+	castVote,
+	createRoom,
+	joinRoom,
+	reveal,
+	startRound,
+} from "#/server/rooms.server";
+
+function requireString(value: unknown, field: string): string {
+	if (typeof value !== "string") throw new Error(`${field} must be a string`);
+	return value;
+}
+
+function requireCardValue(value: unknown): CardValue {
+	if (typeof value !== "string" && typeof value !== "number") {
+		throw new Error("card must be a string or number");
+	}
+	// Membership in the Fibonacci scale / special cards is a business rule,
+	// not a shape check — validated inside castVote() (-> INVALID_VOTE).
+	return value as CardValue;
+}
+
+export const createRoomFn = createServerFn({ method: "POST" })
+	.validator((data: { participantId: string; name: string }) => ({
+		participantId: requireString(data.participantId, "participantId"),
+		name: requireString(data.name, "name"),
+	}))
+	.handler(async ({ data }) => createRoom(data.participantId, data.name));
+
+export const joinRoomFn = createServerFn({ method: "POST" })
+	.validator((data: { code: string; participantId: string; name: string }) => ({
+		code: requireString(data.code, "code"),
+		participantId: requireString(data.participantId, "participantId"),
+		name: requireString(data.name, "name"),
+	}))
+	.handler(async ({ data }) =>
+		joinRoom(data.code, data.participantId, data.name),
+	);
+
+export const startRoundFn = createServerFn({ method: "POST" })
+	.validator(
+		(data: { code: string; participantId: string; question: string }) => ({
+			code: requireString(data.code, "code"),
+			participantId: requireString(data.participantId, "participantId"),
+			question: requireString(data.question, "question"),
+		}),
+	)
+	.handler(async ({ data }) =>
+		startRound(data.code, data.participantId, data.question),
+	);
+
+export const castVoteFn = createServerFn({ method: "POST" })
+	.validator(
+		(data: {
+			code: string;
+			participantId: string;
+			roundId: string;
+			card: unknown;
+		}) => ({
+			code: requireString(data.code, "code"),
+			participantId: requireString(data.participantId, "participantId"),
+			roundId: requireString(data.roundId, "roundId"),
+			card: requireCardValue(data.card),
+		}),
+	)
+	.handler(async ({ data }) =>
+		castVote(data.code, data.participantId, data.roundId, data.card),
+	);
+
+export const revealFn = createServerFn({ method: "POST" })
+	.validator((data: { code: string; participantId: string }) => ({
+		code: requireString(data.code, "code"),
+		participantId: requireString(data.participantId, "participantId"),
+	}))
+	.handler(async ({ data }) => reveal(data.code, data.participantId));
