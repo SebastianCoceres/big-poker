@@ -6,6 +6,7 @@ import { JoinForm } from "#/components/room/JoinForm";
 import { ParticipantBar } from "#/components/room/ParticipantBar";
 import { QuestionPanel } from "#/components/room/QuestionPanel";
 import { ResultsPanel } from "#/components/room/ResultsPanel";
+import { RoomCodeChip } from "#/components/room/RoomCodeChip";
 import { WaitingState } from "#/components/room/WaitingState";
 import { useParticipantIdentity } from "#/hooks/useParticipantIdentity";
 import { useRoomStream } from "#/hooks/useRoomStream";
@@ -99,6 +100,7 @@ function RoomBody({
 
 	return (
 		<div className="flex flex-col gap-4">
+			<RoomCodeChip code={code} />
 			{isMaster && (
 				<QuestionPanel code={code} participantId={myId} snapshot={snapshot} />
 			)}
