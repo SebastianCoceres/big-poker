@@ -27,14 +27,14 @@ export function ResultsPanel({
 	}
 
 	return (
-		<div className="demo-panel rise-in flex flex-col items-center gap-3 py-8 text-center">
-			<p className="island-kicker">Resultado</p>
-			<h2 className="demo-muted max-w-lg text-base font-semibold">
+		<div className="panel rise-in flex flex-col items-center gap-3 py-8 text-center">
+			<p className="kicker">Resultado</p>
+			<h2 className="text-muted max-w-lg text-base font-semibold">
 				{snapshot.question}
 			</h2>
 			{blocked ? (
 				<p
-					className="demo-alert rise-in text-sm"
+					className="alert rise-in text-sm"
 					style={{ animationDelay: "120ms" }}
 				>
 					Hay votos de discusión (?/☕) — no se calcula un promedio. Charlá con
@@ -47,17 +47,17 @@ export function ResultsPanel({
 					style={{ animationDelay: "120ms" }}
 				>
 					<AnimatedResultNumber value={average} roundId={snapshot.roundId} />
-					<span className="demo-muted text-sm">
+					<span className="text-muted text-sm">
 						{voteCount} voto{voteCount === 1 ? "" : "s"}
 					</span>
 				</div>
 			) : (
-				<p className="demo-muted text-sm">Nadie votó todavía en esta ronda.</p>
+				<p className="text-muted text-sm">Nadie votó todavía en esta ronda.</p>
 			)}
 			{isMaster && (
 				<button
 					type="button"
-					className="demo-button demo-button-secondary mt-2"
+					className="btn btn-secondary mt-2"
 					onClick={handleClose}
 					disabled={closing}
 				>

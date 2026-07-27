@@ -17,18 +17,12 @@ export function RoomCodeChip({ code }: { code: string }) {
 	}
 
 	return (
-		<div className="demo-panel rise-in flex items-center justify-between gap-3">
+		<div className="panel rise-in flex items-center justify-between gap-3">
 			<div>
-				<p className="island-kicker mb-1">Código de sala</p>
-				<p className="text-xl font-bold tracking-[0.2em] text-[var(--sea-ink)]">
-					{code}
-				</p>
+				<p className="kicker mb-1">Código de sala</p>
+				<p className="text-ink text-xl font-bold tracking-[0.2em]">{code}</p>
 			</div>
-			<button
-				type="button"
-				onClick={handleCopy}
-				className="demo-button demo-button-secondary"
-			>
+			<button type="button" onClick={handleCopy} className="btn btn-secondary">
 				{copied ? "¡Copiado!" : "Copiar código"}
 			</button>
 		</div>

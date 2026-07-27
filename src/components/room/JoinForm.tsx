@@ -49,16 +49,16 @@ export function JoinForm({
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="demo-panel rise-in mx-auto flex max-w-md flex-col gap-4"
+			className="panel rise-in mx-auto flex max-w-md flex-col gap-4"
 		>
 			<div>
-				<p className="island-kicker mb-1">Sala {code}</p>
-				<h1 className="demo-title text-2xl">Unirte a la sala</h1>
+				<p className="kicker mb-1">Sala {code}</p>
+				<h1 className="heading-lg text-2xl">Unirte a la sala</h1>
 			</div>
 			<label className="flex flex-col gap-1 text-sm font-semibold">
 				Tu nombre
 				<input
-					className="demo-input"
+					className="field"
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 					maxLength={30}
@@ -66,8 +66,8 @@ export function JoinForm({
 					placeholder="Ej: Fede"
 				/>
 			</label>
-			{error && <p className="demo-alert demo-alert-danger text-sm">{error}</p>}
-			<button type="submit" className="demo-button" disabled={submitting}>
+			{error && <p className="alert alert-danger text-sm">{error}</p>}
+			<button type="submit" className="btn" disabled={submitting}>
 				{submitting ? "Uniéndote..." : "Unirse"}
 			</button>
 		</form>

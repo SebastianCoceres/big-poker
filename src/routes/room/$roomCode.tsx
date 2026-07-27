@@ -71,7 +71,7 @@ function RoomPage() {
 					myId={identity.participantId}
 				/>
 				{!snapshot && connectionState === "connecting" && (
-					<p className="demo-muted rise-in text-sm">Conectando a la sala...</p>
+					<p className="text-muted rise-in text-sm">Conectando a la sala...</p>
 				)}
 				{snapshot && (
 					<RoomBody

@@ -36,17 +36,14 @@ export function QuestionPanel({
 	}
 
 	return (
-		<form
-			onSubmit={handleStart}
-			className="demo-panel rise-in flex flex-col gap-3"
-		>
-			<p className="island-kicker">
+		<form onSubmit={handleStart} className="panel rise-in flex flex-col gap-3">
+			<p className="kicker">
 				{snapshot.question ? "Nueva pregunta" : "Primera pregunta"}
 			</p>
 			<label className="flex flex-col gap-1 text-sm font-semibold">
 				Historia / pregunta a votar
 				<textarea
-					className="demo-textarea"
+					className="field min-h-28 resize-y"
 					value={question}
 					onChange={(e) => setQuestion(e.target.value)}
 					maxLength={300}
@@ -54,8 +51,8 @@ export function QuestionPanel({
 					placeholder="Ej: ¿Cuánto esfuerzo lleva la historia X?"
 				/>
 			</label>
-			{error && <p className="demo-alert demo-alert-danger text-sm">{error}</p>}
-			<button type="submit" className="demo-button" disabled={submitting}>
+			{error && <p className="alert alert-danger text-sm">{error}</p>}
+			<button type="submit" className="btn" disabled={submitting}>
 				{snapshot.question ? "Iniciar nueva ronda" : "Iniciar ronda"}
 			</button>
 		</form>

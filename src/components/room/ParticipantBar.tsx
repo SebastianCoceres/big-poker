@@ -2,14 +2,14 @@ import { useState } from "react";
 import type { RoomSnapshot } from "#/server/rooms.server";
 
 const AVATAR_COLORS = [
-	"#4fb8b2",
-	"#2f6a4a",
-	"#328f97",
-	"#c17e2a",
-	"#a85fb0",
-	"#6ec89a",
-	"#4a7bc8",
-	"#c1574a",
+	"#2563eb",
+	"#7c3aed",
+	"#0ea5e9",
+	"#db2777",
+	"#f59e0b",
+	"#059669",
+	"#e11d48",
+	"#0891b2",
 ];
 
 // Beyond this many, the rest collapse into a "+N" chip (see VISIBLE_LIMIT
@@ -57,7 +57,7 @@ function Avatar({
 						participant.connected ? "" : "opacity-40"
 					} ${
 						participant.isMaster
-							? "ring-2 ring-offset-2 ring-[var(--lagoon-deep)] ring-offset-[var(--header-bg)]"
+							? "ring-blue-deep ring-offset-header ring-2 ring-offset-2"
 							: ""
 					}`}
 					style={{ backgroundColor: colorForId(participant.id) }}
@@ -65,17 +65,17 @@ function Avatar({
 					{initials(participant.name)}
 				</div>
 				{showCheck && (
-					<span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[11px] leading-none text-white ring-2 ring-[var(--header-bg)]">
+					<span className="ring-header absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[11px] leading-none text-white ring-2">
 						✓
 					</span>
 				)}
 				{showVote && (
-					<span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-700 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-[var(--header-bg)]">
+					<span className="ring-header absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-700 px-1 text-[10px] font-bold leading-none text-white ring-2">
 						{participant.vote ?? "–"}
 					</span>
 				)}
 			</div>
-			<span className="max-w-12 truncate text-[10px] text-[var(--sea-ink-soft)]">
+			<span className="text-ink-soft max-w-12 truncate text-[10px]">
 				{participant.name}
 			</span>
 		</li>
@@ -88,10 +88,10 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 	const overflow = snapshot.participants.slice(VISIBLE_LIMIT);
 
 	return (
-		<nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[var(--header-bg)] backdrop-blur-lg">
+		<nav className="border-line bg-header fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-lg">
 			{expanded && overflow.length > 0 && (
-				<div className="absolute inset-x-4 bottom-full mb-2 max-h-64 overflow-y-auto rounded-2xl border border-[var(--line)] bg-[var(--header-bg)] p-3 shadow-[0_-8px_24px_rgba(23,58,64,0.14)] backdrop-blur-lg">
-					<p className="island-kicker mb-2">Más participantes</p>
+				<div className="border-line bg-header shadow-ink/10 absolute inset-x-4 bottom-full mb-2 max-h-64 overflow-y-auto rounded-2xl border p-3 shadow-xl backdrop-blur-lg">
+					<p className="kicker mb-2">Más participantes</p>
 					<ul className="flex flex-col gap-2">
 						{overflow.map((p) => (
 							<li
@@ -104,12 +104,12 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 								</span>
 								{snapshot.status === "voting" &&
 									(p.hasVoted ? (
-										<span className="demo-pill">✓</span>
+										<span className="pill">✓</span>
 									) : (
-										<span className="demo-muted text-xs">esperando</span>
+										<span className="text-muted text-xs">esperando</span>
 									))}
 								{snapshot.status === "revealed" && (
-									<span className="demo-pill">{p.vote ?? "–"}</span>
+									<span className="pill">{p.vote ?? "–"}</span>
 								)}
 							</li>
 						))}
@@ -127,11 +127,11 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 							onClick={() => setExpanded((v) => !v)}
 							aria-expanded={expanded}
 							aria-label={`Ver ${overflow.length} participantes más`}
-							className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] text-sm font-bold text-[var(--sea-ink)] transition hover:-translate-y-0.5"
+							className="border-chip-line bg-chip text-ink flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition hover:-translate-y-0.5"
 						>
 							+{overflow.length}
 						</button>
-						<span className="text-[10px] text-[var(--sea-ink-soft)]">más</span>
+						<span className="text-ink-soft text-[10px]">más</span>
 					</li>
 				)}
 			</ul>

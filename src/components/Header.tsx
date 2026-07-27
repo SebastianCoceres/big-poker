@@ -8,9 +8,9 @@ export default function Header() {
 		<header className="page-wrap flex items-center justify-between px-4 pt-4">
 			<Link
 				to="/"
-				className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
+				className="border-chip-line bg-chip text-ink inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm no-underline shadow-lg shadow-blue-950/10 sm:px-4 sm:py-2"
 			>
-				<span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,#56c6be,#7ed3bf)]" />
+				<span className="from-blue to-violet h-2 w-2 rounded-full bg-linear-to-r" />
 				BigPoker
 			</Link>
 			<ThemeToggle />

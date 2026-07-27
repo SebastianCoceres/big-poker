@@ -12,7 +12,7 @@ export function ConnectionBanner({
 }) {
 	if (connectionState === "room-gone") {
 		return (
-			<p className="demo-alert demo-alert-danger text-sm">
+			<p className="alert alert-danger text-sm">
 				Esta sala ya no existe (probablemente el servidor se reinició).{" "}
 				<a href="/" className="font-semibold underline">
 					Creá una sala nueva
@@ -23,7 +23,7 @@ export function ConnectionBanner({
 	}
 
 	if (connectionState === "reconnecting") {
-		return <p className="demo-alert text-sm">Reconectando...</p>;
+		return <p className="alert text-sm">Reconectando...</p>;
 	}
 
 	const master = snapshot?.participants.find((p) => p.isMaster);
@@ -35,7 +35,7 @@ export function ConnectionBanner({
 		master.id !== myId
 	) {
 		return (
-			<p className="demo-alert text-sm">
+			<p className="alert text-sm">
 				El master se desconectó. Podés seguir votando, pero hace falta que
 				vuelva para revelar o iniciar la próxima ronda.
 			</p>

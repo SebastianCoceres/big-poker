@@ -128,13 +128,14 @@ function Home() {
 
 	return (
 		<main className="page-wrap flex min-h-[calc(100vh-9rem)] flex-col items-center justify-center gap-6 px-4 py-14">
+			<div className="home-aurora" aria-hidden />
 			<div className="rise-in max-w-md text-center">
-				<p className="island-kicker mb-2">BigPoker</p>
-				<h1 className="demo-title text-3xl sm:text-4xl">
+				<p className="kicker mb-2">BigPoker</p>
+				<h1 className="heading-lg text-3xl sm:text-4xl">
 					Estimá en equipo, sin fricción.
 				</h1>
 				{step === "name" && (
-					<p className="demo-muted mt-2 text-sm">
+					<p className="text-muted mt-2 text-sm">
 						Sin cuentas, sin instalaciones. Empecemos con tu nombre.
 					</p>
 				)}
@@ -143,12 +144,12 @@ function Home() {
 			{step === "name" && (
 				<form
 					onSubmit={handleConfirmName}
-					className="demo-panel rise-in flex w-full max-w-md flex-col gap-4"
+					className="panel rise-in flex w-full max-w-md flex-col gap-4"
 				>
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Tu nombre
 						<input
-							className="demo-input"
+							className="field"
 							value={nameInput}
 							onChange={(e) => setNameInput(e.target.value)}
 							maxLength={30}
@@ -156,27 +157,24 @@ function Home() {
 							placeholder="Ej: Sebastián"
 						/>
 					</label>
-					<button type="submit" className="demo-button">
+					<button type="submit" className="btn">
 						Continuar
 					</button>
 				</form>
 			)}
 
 			{step === "choose" && (
-				<div className="demo-panel rise-in flex w-full max-w-md flex-col gap-4">
-					<p className="demo-muted text-sm">
-						Hola,{" "}
-						<strong className="text-[var(--sea-ink)]">{displayName}</strong>.
+				<div className="panel rise-in flex w-full max-w-md flex-col gap-4">
+					<p className="text-muted text-sm">
+						Hola, <strong className="text-ink">{displayName}</strong>.
 					</p>
 					{createError && (
-						<p className="demo-alert demo-alert-danger text-sm">
-							{createError}
-						</p>
+						<p className="alert alert-danger text-sm">{createError}</p>
 					)}
 					<button
 						type="button"
 						onClick={handleCreate}
-						className="demo-button"
+						className="btn"
 						disabled={creating}
 					>
 						{creating ? "Creando..." : "Crear sala"}
@@ -184,14 +182,14 @@ function Home() {
 					<button
 						type="button"
 						onClick={() => setStep("join")}
-						className="demo-button demo-button-secondary"
+						className="btn btn-secondary"
 					>
 						Unirse a sala
 					</button>
 					<button
 						type="button"
 						onClick={handleChangeName}
-						className="text-sm font-semibold text-[var(--lagoon-deep)] underline decoration-[rgba(50,143,151,0.4)] underline-offset-4 transition hover:text-[#246f76]"
+						className="text-blue-deep text-sm font-semibold underline decoration-blue/40 underline-offset-4 transition hover:brightness-90"
 					>
 						¿No sos vos? Cambiar nombre
 					</button>
@@ -201,18 +199,18 @@ function Home() {
 			{step === "join" && (
 				<form
 					onSubmit={handleJoin}
-					className="demo-panel rise-in flex w-full max-w-md flex-col gap-4"
+					className="panel rise-in flex w-full max-w-md flex-col gap-4"
 				>
 					<div>
-						<h2 className="demo-section-title mb-1">Unirse a sala</h2>
-						<p className="demo-muted text-sm">
+						<h2 className="heading-sm mb-1">Unirse a sala</h2>
+						<p className="text-muted text-sm">
 							Pedile el código al master de la sala.
 						</p>
 					</div>
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Código de sala
 						<input
-							className="demo-input uppercase tracking-[0.2em]"
+							className="field uppercase tracking-[0.2em]"
 							value={joinCode}
 							onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
 							maxLength={6}
@@ -221,11 +219,11 @@ function Home() {
 						/>
 					</label>
 					{joinError && (
-						<p className="demo-alert demo-alert-danger text-sm">{joinError}</p>
+						<p className="alert alert-danger text-sm">{joinError}</p>
 					)}
 					<button
 						type="submit"
-						className="demo-button demo-button-secondary"
+						className="btn btn-secondary"
 						disabled={joining}
 					>
 						{joining ? "Uniéndote..." : "Unirse a sala"}
@@ -233,7 +231,7 @@ function Home() {
 					<button
 						type="button"
 						onClick={() => setStep("choose")}
-						className="text-sm font-semibold text-[var(--sea-ink-soft)] underline underline-offset-4"
+						className="text-ink-soft text-sm font-semibold underline underline-offset-4"
 					>
 						Volver
 					</button>

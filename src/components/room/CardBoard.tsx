@@ -16,7 +16,7 @@ const STACK_ORDER: CardValue[] = [...CARD_VALUES].reverse();
 
 function CardFace({ value }: { value: CardValue }) {
 	return (
-		<div className="demo-card flex h-full w-full select-none items-center justify-center border-2 border-[var(--line)] bg-[var(--surface-strong)] text-3xl font-bold text-[var(--sea-ink)] shadow-lg">
+		<div className="playing-card text-ink flex h-full w-full select-none items-center justify-center border-2 p-0 text-3xl font-bold">
 			{value}
 		</div>
 	);
@@ -82,14 +82,13 @@ export function CardBoard({
 	}
 
 	return (
-		<div className="demo-panel rise-in flex flex-col items-center gap-4">
+		<div className="panel rise-in flex flex-col items-center gap-4">
 			<div className="w-full text-center">
-				<h2 className="demo-section-title">{snapshot.question}</h2>
-				<p className="demo-muted mt-1 text-sm">
+				<h2 className="heading-sm">{snapshot.question}</h2>
+				<p className="text-muted mt-1 text-sm">
 					{myVote !== null ? (
 						<>
-							Tu voto:{" "}
-							<strong className="text-[var(--sea-ink)]">{myVote}</strong>
+							Tu voto: <strong className="text-ink">{myVote}</strong>
 						</>
 					) : (
 						"Arrastrá para ver las cartas, tocá la de arriba para votar."
@@ -97,7 +96,7 @@ export function CardBoard({
 				</p>
 			</div>
 			{sendState === "error" && (
-				<p className="demo-alert demo-alert-danger flex items-center gap-2 text-sm">
+				<p className="alert alert-danger flex items-center gap-2 text-sm">
 					No pudimos confirmar tu voto.
 					<button
 						type="button"

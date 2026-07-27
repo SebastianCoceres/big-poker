@@ -45,7 +45,7 @@ export function AnimatedResultNumber({
 			value={display}
 			willChange
 			trend={1}
-			className="display-title text-6xl font-bold leading-none text-(--lagoon-deep) sm:text-7xl"
+			className="display-title text-blue-deep text-6xl font-bold leading-none sm:text-7xl"
 		/>
 	);
 }
