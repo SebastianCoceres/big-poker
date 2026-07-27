@@ -1,8 +1,30 @@
+import { useState } from "react";
+import { AnimatedResultNumber } from "#/components/room/AnimatedResultNumber";
+import { closeResultFn } from "#/server/rooms.functions";
 import type { RoomSnapshot } from "#/server/rooms.server";
 
-export function ResultsPanel({ snapshot }: { snapshot: RoomSnapshot }) {
+export function ResultsPanel({
+	code,
+	participantId,
+	snapshot,
+}: {
+	code: string;
+	participantId: string;
+	snapshot: RoomSnapshot;
+}) {
+	const [closing, setClosing] = useState(false);
 	if (!snapshot.results) return null;
 	const { average, blocked, voteCount } = snapshot.results;
+	const isMaster = snapshot.masterId === participantId;
+
+	async function handleClose() {
+		setClosing(true);
+		try {
+			await closeResultFn({ data: { code, participantId } });
+		} finally {
+			setClosing(false);
+		}
+	}
 
 	return (
 		<div className="demo-panel rise-in flex flex-col items-center gap-3 py-8 text-center">
@@ -24,16 +46,23 @@ export function ResultsPanel({ snapshot }: { snapshot: RoomSnapshot }) {
 					className="rise-in flex flex-col items-center gap-1"
 					style={{ animationDelay: "120ms" }}
 				>
-					<span className="display-title text-6xl font-bold leading-none text-[var(--lagoon-deep)] sm:text-7xl">
-						{average}
-					</span>
+					<AnimatedResultNumber value={average} roundId={snapshot.roundId} />
 					<span className="demo-muted text-sm">
-						Media estimada, redondeada hacia arriba · {voteCount} voto
-						{voteCount === 1 ? "" : "s"}
+						{voteCount} voto{voteCount === 1 ? "" : "s"}
 					</span>
 				</div>
 			) : (
 				<p className="demo-muted text-sm">Nadie votó todavía en esta ronda.</p>
+			)}
+			{isMaster && (
+				<button
+					type="button"
+					className="demo-button demo-button-secondary mt-2"
+					onClick={handleClose}
+					disabled={closing}
+				>
+					Cerrar resultado
+				</button>
 			)}
 		</div>
 	);

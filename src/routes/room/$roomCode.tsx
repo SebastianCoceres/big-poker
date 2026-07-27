@@ -100,15 +100,17 @@ function RoomBody({
 
 	return (
 		<div className="flex flex-col gap-4">
-			<RoomCodeChip code={code} />
-			{isMaster && (
+			{isMaster && <RoomCodeChip code={code} />}
+			{isMaster && snapshot.status === "waiting" && (
 				<QuestionPanel code={code} participantId={myId} snapshot={snapshot} />
 			)}
 			{snapshot.status === "waiting" && !isMaster && <WaitingState />}
 			{snapshot.status === "voting" && (
 				<CardBoard code={code} participantId={myId} snapshot={snapshot} />
 			)}
-			{snapshot.status === "revealed" && <ResultsPanel snapshot={snapshot} />}
+			{snapshot.status === "revealed" && (
+				<ResultsPanel code={code} participantId={myId} snapshot={snapshot} />
+			)}
 		</div>
 	);
 }

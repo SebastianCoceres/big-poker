@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { CardValue } from "#/lib/fibonacci";
 import {
 	castVote,
+	closeResult,
 	createRoom,
 	joinRoom,
 	reveal,
@@ -75,3 +76,10 @@ export const revealFn = createServerFn({ method: "POST" })
 		participantId: requireString(data.participantId, "participantId"),
 	}))
 	.handler(async ({ data }) => reveal(data.code, data.participantId));
+
+export const closeResultFn = createServerFn({ method: "POST" })
+	.validator((data: { code: string; participantId: string }) => ({
+		code: requireString(data.code, "code"),
+		participantId: requireString(data.participantId, "participantId"),
+	}))
+	.handler(async ({ data }) => closeResult(data.code, data.participantId));

@@ -67,6 +67,10 @@ interface Registry {
 	// touching the rest of the room's subscribers.
 	subscribers: Map<string, Map<string, Set<Send>>>;
 	cleanupTimer?: ReturnType<typeof setInterval>;
+	// Keyed by roomCode -> pending "close this empty room" timeout, separate
+	// from the 6h sweep so a room with zero connected participants can be
+	// closed on a much shorter, more intentional grace period.
+	emptyRoomTimers: Map<string, ReturnType<typeof setTimeout>>;
 }
 
 // Guarded on globalThis so Vite's SSR module re-execution on file edits (dev
@@ -75,12 +79,39 @@ const g = globalThis as unknown as { __bigPokerRegistry?: Registry };
 const registry: Registry = g.__bigPokerRegistry ?? {
 	rooms: new Map(),
 	subscribers: new Map(),
+	emptyRoomTimers: new Map(),
 };
 if (import.meta.env.DEV) g.__bigPokerRegistry = registry;
 
 const ROOM_CODE_MAX_ATTEMPTS = 5;
 const ROOM_TTL_MS = 6 * 60 * 60 * 1000;
 const SWEEP_INTERVAL_MS = 5 * 60 * 1000;
+// Grace period before an empty room (no connected subscribers) is closed —
+// short enough to actually free the room promptly, long enough to survive a
+// quick page refresh without losing the room. The 6h sweep above stays as a
+// safety net for anything this misses.
+const EMPTY_ROOM_GRACE_MS = 2 * 60 * 1000;
+
+function cancelEmptyRoomTimer(code: string): void {
+	const timer = registry.emptyRoomTimers.get(code);
+	if (!timer) return;
+	clearTimeout(timer);
+	registry.emptyRoomTimers.delete(code);
+}
+
+function scheduleEmptyRoomCleanup(code: string): void {
+	cancelEmptyRoomTimer(code);
+	const timer = setTimeout(() => {
+		registry.emptyRoomTimers.delete(code);
+		const stillEmpty = (registry.subscribers.get(code)?.size ?? 0) === 0;
+		if (stillEmpty) {
+			registry.rooms.delete(code);
+			registry.subscribers.delete(code);
+		}
+	}, EMPTY_ROOM_GRACE_MS);
+	timer.unref?.();
+	registry.emptyRoomTimers.set(code, timer);
+}
 
 function ensureCleanupTimer() {
 	if (registry.cleanupTimer) return;
@@ -201,6 +232,10 @@ export function subscribe(
 	participantId: string,
 	send: Send,
 ): () => void {
+	// Someone (re)connected — cancel any pending "close this empty room" timer
+	// (e.g. a quick page refresh that briefly dropped the last connection).
+	cancelEmptyRoomTimer(code);
+
 	let byParticipant = registry.subscribers.get(code);
 	if (!byParticipant) {
 		byParticipant = new Map();
@@ -221,6 +256,7 @@ export function subscribe(
 	return () => {
 		senders?.delete(send);
 		if (senders && senders.size === 0) byParticipant?.delete(participantId);
+		if ((byParticipant?.size ?? 0) === 0) scheduleEmptyRoomCleanup(code);
 		broadcast(code);
 	};
 }
@@ -348,6 +384,16 @@ export function castVote(
 
 	participant.vote = card;
 	room.lastActivityAt = Date.now();
+
+	// Auto-reveal once every seat has a vote — same total the UI already shows
+	// as "X de Y ya votaron" (QuestionPanel.tsx). Includes disconnected
+	// participants on purpose: if one of them never votes, this never fires
+	// and the master's manual "Revelar votos" stays the fallback.
+	const allVoted = [...room.participants.values()].every(
+		(p) => p.vote !== null,
+	);
+	if (allVoted) room.status = "revealed";
+
 	broadcast(room.code);
 	return { ok: true, data: toSnapshot(room) };
 }
@@ -366,6 +412,27 @@ export function reveal(
 	// reveal control during voting anyway.
 	if (room.status === "voting") {
 		room.status = "revealed";
+		room.lastActivityAt = Date.now();
+		broadcast(room.code);
+	}
+	return { ok: true, data: toSnapshot(room) };
+}
+
+export function closeResult(
+	code: string,
+	participantId: string,
+): Result<RoomSnapshot> {
+	const room = getRoom(code);
+	if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
+	if (room.masterId !== participantId)
+		return { ok: false, error: "NOT_MASTER" };
+
+	// Idempotent no-op outside "revealed" (double-click), mirrors reveal().
+	// Deliberately does NOT clear room.question — QuestionPanel uses its
+	// presence to say "Nueva pregunta" vs "Primera pregunta" on the next
+	// round's form, and clearing it here would wrongly reset that label.
+	if (room.status === "revealed") {
+		room.status = "waiting";
 		room.lastActivityAt = Date.now();
 		broadcast(room.code);
 	}

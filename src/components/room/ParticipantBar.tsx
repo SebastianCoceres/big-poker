@@ -70,7 +70,7 @@ function Avatar({
 					</span>
 				)}
 				{showVote && (
-					<span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--lagoon-deep)] px-1 text-[10px] font-bold leading-none text-white ring-2 ring-[var(--header-bg)]">
+					<span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-700 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-[var(--header-bg)]">
 						{participant.vote ?? "–"}
 					</span>
 				)}
