@@ -32,14 +32,14 @@ export function JoinForm({
 		setError(null);
 		setSubmitting(true);
 		try {
-			const participantId = crypto.randomUUID();
-			const result = await joinRoomFn({ data: { code, participantId, name } });
+			const result = await joinRoomFn({ data: { code, name } });
 			if (!result.ok) {
 				setError(errorMessage(result.error));
 				return;
 			}
-			onJoined({ participantId, name: name.trim() });
-		} catch {
+			onJoined({ participantId: result.data.participantId, name: name.trim() });
+		} catch (err) {
+			console.error("[joinRoomFn] request failed", err);
 			setError("No pudimos unirte a la sala. Probá de nuevo.");
 		} finally {
 			setSubmitting(false);

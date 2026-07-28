@@ -269,16 +269,23 @@ function generateUniqueRoomCode(): Result<string> {
 	return { ok: false, error: "ROOM_CODE_EXHAUSTED" };
 }
 
-export function createRoom(
-	participantId: string,
-	name: string,
-): Result<RoomSnapshot> {
+export interface JoinedRoom {
+	participantId: string;
+	snapshot: RoomSnapshot;
+}
+
+// Identity is minted here, not on the client: `crypto.randomUUID()` is only
+// exposed by browsers in secure contexts (HTTPS, or localhost), so a phone
+// joining over plain HTTP on a LAN IP would otherwise have no way to
+// generate one. Node's `crypto` has no such restriction.
+export function createRoom(name: string): Result<JoinedRoom> {
 	const cleanName = cleanText(name, 30);
 	if (!cleanName) return { ok: false, error: "INVALID_NAME" };
 
 	const codeResult = generateUniqueRoomCode();
 	if (!codeResult.ok) return codeResult;
 
+	const participantId = crypto.randomUUID();
 	const now = Date.now();
 	const room: Room = {
 		code: codeResult.data,
@@ -302,39 +309,48 @@ export function createRoom(
 		]),
 	};
 	registry.rooms.set(room.code, room);
-	return { ok: true, data: toSnapshot(room) };
+	return { ok: true, data: { participantId, snapshot: toSnapshot(room) } };
 }
 
+// `participantId` is only passed by a returning participant (reconnect/page
+// refresh) reclaiming their existing seat — see the rejoin effect in
+// room/$roomCode.tsx. A first-time join omits it and gets a freshly minted
+// one back in the result, for the same secure-context reason as createRoom.
 export function joinRoom(
 	code: string,
-	participantId: string,
 	name: string,
-): Result<RoomSnapshot> {
+	participantId?: string,
+): Result<JoinedRoom> {
 	const room = getRoom(code);
 	if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
 
 	const cleanName = cleanText(name, 30);
 	if (!cleanName) return { ok: false, error: "INVALID_NAME" };
-	if (isNameTaken(room, cleanName, participantId)) {
+
+	const resolvedId = participantId ?? crypto.randomUUID();
+	if (isNameTaken(room, cleanName, resolvedId)) {
 		return { ok: false, error: "NAME_TAKEN" };
 	}
 
-	const existing = room.participants.get(participantId);
+	const existing = room.participants.get(resolvedId);
 	if (existing) {
 		// Idempotent: reconnecting/refreshing re-sends join with the same id.
 		existing.name = cleanName;
 	} else {
-		room.participants.set(participantId, {
-			id: participantId,
+		room.participants.set(resolvedId, {
+			id: resolvedId,
 			name: cleanName,
-			isMaster: participantId === room.masterId,
+			isMaster: resolvedId === room.masterId,
 			vote: null,
 			joinedAt: Date.now(),
 		});
 	}
 	room.lastActivityAt = Date.now();
 	broadcast(room.code);
-	return { ok: true, data: toSnapshot(room) };
+	return {
+		ok: true,
+		data: { participantId: resolvedId, snapshot: toSnapshot(room) },
+	};
 }
 
 export function startRound(
