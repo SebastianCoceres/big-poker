@@ -82,7 +82,7 @@ export function CardBoard({
 	}
 
 	return (
-		<div className="panel rise-in flex flex-col items-center gap-4">
+		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-4">
 			<div className="w-full text-center">
 				<h2 className="heading-sm">{snapshot.question}</h2>
 				<p className="text-muted mt-1 text-sm">
@@ -96,7 +96,7 @@ export function CardBoard({
 				</p>
 			</div>
 			{sendState === "error" && (
-				<p className="alert alert-danger flex items-center gap-2 text-sm">
+				<p className="text-danger flex items-center gap-2 text-sm">
 					No pudimos confirmar tu voto.
 					<button
 						type="button"

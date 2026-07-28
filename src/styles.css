@@ -25,6 +25,8 @@
 	--color-link-hover: rgba(255, 255, 255, 0.9);
 	--color-aurora-a: rgba(37, 99, 235, 0.24);
 	--color-aurora-b: rgba(124, 58, 237, 0.16);
+	--color-danger: #b91c1c;
+	--color-warning: #b45309;
 }
 
 /* Same token names as @theme above — reassigning them here is how the
@@ -51,6 +53,8 @@
 	--color-link-hover: rgba(20, 28, 50, 0.82);
 	--color-aurora-a: rgba(59, 130, 246, 0.28);
 	--color-aurora-b: rgba(139, 92, 246, 0.2);
+	--color-danger: #f87171;
+	--color-warning: #fbbf24;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -74,6 +78,8 @@
 		--color-link-hover: rgba(20, 28, 50, 0.82);
 		--color-aurora-a: rgba(59, 130, 246, 0.28);
 		--color-aurora-b: rgba(139, 92, 246, 0.2);
+		--color-danger: #f87171;
+		--color-warning: #fbbf24;
 	}
 }
 
@@ -169,10 +175,6 @@ pre code {
 	font-weight: 800;
 }
 
-.panel {
-	@apply border-line bg-surface-strong shadow-blue-950/10 rounded-3xl border p-5 shadow-xl backdrop-blur-sm sm:p-8;
-}
-
 .playing-card {
 	@apply border-line bg-surface-strong shadow-blue-950/15 rounded-2xl border p-4 shadow-lg;
 }
@@ -219,14 +221,6 @@ pre code {
 
 .pill {
 	@apply border-chip-line bg-chip text-ink-soft inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-bold;
-}
-
-.alert {
-	@apply text-ink rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm;
-}
-
-.alert-danger {
-	@apply border-red-500/30 bg-red-500/10;
 }
 
 .kicker {

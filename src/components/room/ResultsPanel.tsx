@@ -27,14 +27,14 @@ export function ResultsPanel({
 	}
 
 	return (
-		<div className="panel rise-in flex flex-col items-center gap-3 py-8 text-center">
+		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
 			<p className="kicker">Resultado</p>
 			<h2 className="text-muted max-w-lg text-base font-semibold">
 				{snapshot.question}
 			</h2>
 			{blocked ? (
 				<p
-					className="alert rise-in text-sm"
+					className="text-warning rise-in text-sm"
 					style={{ animationDelay: "120ms" }}
 				>
 					Hay votos de discusión (?/☕) — no se calcula un promedio. Charlá con

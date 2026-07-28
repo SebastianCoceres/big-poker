@@ -8,6 +8,7 @@ import { ParticipantBar } from "#/components/room/ParticipantBar";
 import { QuestionPanel } from "#/components/room/QuestionPanel";
 import { ResultsPanel } from "#/components/room/ResultsPanel";
 import { RoomControlIsland } from "#/components/room/RoomControlIsland";
+import { RoomEndedView } from "#/components/room/RoomEndedView";
 import { WaitingState } from "#/components/room/WaitingState";
 import { useParticipantIdentity } from "#/hooks/useParticipantIdentity";
 import { useRoomStream } from "#/hooks/useRoomStream";
@@ -55,17 +56,27 @@ function RoomPage() {
 
 	if (!identity) {
 		return (
-			<main className="page-wrap px-4 pb-8 pt-14">
+			<main className="page-wrap flex min-h-dvh flex-col items-center justify-center px-4">
 				<JoinForm code={code} onJoined={setIdentity} />
 			</main>
 		);
 	}
 
+	// Terminal connection states take over the whole screen instead of
+	// banner-ing over stale room content below them.
+	if (
+		connectionState === "room-gone" ||
+		connectionState === "closed" ||
+		connectionState === "kicked"
+	) {
+		return <RoomEndedView state={connectionState} />;
+	}
+
 	return (
 		<>
 			{/* pb reserves room for the fixed ParticipantBar below so the last
-			    card/panel never sits underneath it. */}
-			<main className="page-wrap flex flex-col gap-4 px-4 pb-32 pt-6">
+			    section never sits underneath it. */}
+			<main className="page-wrap flex min-h-dvh flex-col gap-4 px-4 pb-32 pt-6">
 				<ConnectionBanner
 					connectionState={connectionState}
 					snapshot={snapshot}
@@ -100,7 +111,7 @@ function RoomBody({
 	const isMaster = me?.isMaster ?? false;
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-1 flex-col gap-4">
 			{isMaster ? (
 				<RoomControlIsland
 					code={code}

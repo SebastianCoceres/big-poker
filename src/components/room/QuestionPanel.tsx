@@ -36,7 +36,10 @@ export function QuestionPanel({
 	}
 
 	return (
-		<form onSubmit={handleStart} className="panel rise-in flex flex-col gap-3">
+		<form
+			onSubmit={handleStart}
+			className="rise-in flex flex-1 flex-col justify-center gap-3"
+		>
 			<p className="kicker">
 				{snapshot.question ? "Nueva pregunta" : "Primera pregunta"}
 			</p>
@@ -51,7 +54,7 @@ export function QuestionPanel({
 					placeholder="Ej: ¿Cuánto esfuerzo lleva la historia X?"
 				/>
 			</label>
-			{error && <p className="alert alert-danger text-sm">{error}</p>}
+			{error && <p className="text-danger text-sm">{error}</p>}
 			<button type="submit" className="btn" disabled={submitting}>
 				{snapshot.question ? "Iniciar nueva ronda" : "Iniciar ronda"}
 			</button>

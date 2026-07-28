@@ -142,7 +142,7 @@ function Home() {
 			{step === "name" && (
 				<form
 					onSubmit={handleConfirmName}
-					className="panel rise-in flex w-full max-w-md flex-col gap-4"
+					className="rise-in flex w-full max-w-md flex-col gap-4"
 				>
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Tu nombre
@@ -162,13 +162,11 @@ function Home() {
 			)}
 
 			{step === "choose" && (
-				<div className="panel rise-in flex w-full max-w-md flex-col gap-4">
+				<div className="rise-in flex w-full max-w-md flex-col gap-4">
 					<p className="text-muted text-sm">
 						Hola, <strong className="text-ink">{displayName}</strong>.
 					</p>
-					{createError && (
-						<p className="alert alert-danger text-sm">{createError}</p>
-					)}
+					{createError && <p className="text-danger text-sm">{createError}</p>}
 					<button
 						type="button"
 						onClick={handleCreate}
@@ -197,7 +195,7 @@ function Home() {
 			{step === "join" && (
 				<form
 					onSubmit={handleJoin}
-					className="panel rise-in flex w-full max-w-md flex-col gap-4"
+					className="rise-in flex w-full max-w-md flex-col gap-4"
 				>
 					<div>
 						<h2 className="heading-sm mb-1">Unirse a sala</h2>
@@ -216,9 +214,7 @@ function Home() {
 							placeholder="Ej: 7F3KQD"
 						/>
 					</label>
-					{joinError && (
-						<p className="alert alert-danger text-sm">{joinError}</p>
-					)}
+					{joinError && <p className="text-danger text-sm">{joinError}</p>}
 					<button
 						type="submit"
 						className="btn btn-secondary"

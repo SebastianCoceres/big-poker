@@ -1,6 +1,6 @@
 export function WaitingState() {
 	return (
-		<div className="panel rise-in flex flex-col items-center gap-2 py-12 text-center">
+		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center">
 			<p className="kicker">Esperando</p>
 			<h2 className="heading-sm text-lg">
 				El master todavía no inició una ronda

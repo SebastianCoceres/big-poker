@@ -49,7 +49,7 @@ export function JoinForm({
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="panel rise-in mx-auto flex max-w-md flex-col gap-4"
+			className="rise-in mx-auto flex w-full max-w-md flex-col gap-4"
 		>
 			<div>
 				<p className="kicker mb-1">Sala {code}</p>
@@ -66,7 +66,7 @@ export function JoinForm({
 					placeholder="Ej: Fede"
 				/>
 			</label>
-			{error && <p className="alert alert-danger text-sm">{error}</p>}
+			{error && <p className="text-danger text-sm">{error}</p>}
 			<button type="submit" className="btn" disabled={submitting}>
 				{submitting ? "Uniéndote..." : "Unirse"}
 			</button>
