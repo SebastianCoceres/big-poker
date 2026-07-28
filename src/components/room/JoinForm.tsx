@@ -1,5 +1,9 @@
-import { type FormEvent, useState } from "react";
-import type { ParticipantIdentity } from "#/hooks/useParticipantIdentity";
+import { type FormEvent, useEffect, useState } from "react";
+import {
+	type ParticipantIdentity,
+	readDisplayName,
+	writeDisplayName,
+} from "#/hooks/useParticipantIdentity";
 import { joinRoomFn } from "#/server/rooms.functions";
 import type { RoomErrorCode } from "#/server/rooms.server";
 
@@ -23,27 +27,49 @@ export function JoinForm({
 	code: string;
 	onJoined: (identity: ParticipantIdentity) => void;
 }) {
-	const [name, setName] = useState("");
+	// This browser already knows who it is (saved from a previous visit,
+	// here or on Home) — one identity per browser, so join straight away
+	// instead of asking again. Only a browser that's never been here before
+	// (or incognito) needs the form below.
+	const knownName = readDisplayName();
+	const [name, setName] = useState(knownName ?? "");
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
+	async function join(joinName: string) {
 		setError(null);
 		setSubmitting(true);
 		try {
-			const result = await joinRoomFn({ data: { code, name } });
+			const result = await joinRoomFn({ data: { code, name: joinName } });
 			if (!result.ok) {
 				setError(errorMessage(result.error));
 				return;
 			}
-			onJoined({ participantId: result.data.participantId, name: name.trim() });
+			const trimmed = joinName.trim();
+			writeDisplayName(trimmed);
+			onJoined({ participantId: result.data.participantId, name: trimmed });
 		} catch (err) {
 			console.error("[joinRoomFn] request failed", err);
 			setError("No pudimos unirte a la sala. Probá de nuevo.");
 		} finally {
 			setSubmitting(false);
 		}
+	}
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount only, to auto-join with the browser's already-known name.
+	useEffect(() => {
+		if (knownName) join(knownName);
+	}, []);
+
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		join(name);
+	}
+
+	// While the known name is auto-joining and hasn't failed, there's
+	// nothing to show but a loading state — no form, no name to re-enter.
+	if (knownName && !error) {
+		return <p className="text-muted rise-in text-sm">Uniéndote a la sala...</p>;
 	}
 
 	return (

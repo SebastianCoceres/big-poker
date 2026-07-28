@@ -1,17 +1,12 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import {
-	createRootRoute,
-	HeadContent,
-	Scripts,
-	useRouterState,
-} from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
 
 import appCss from "../styles.css?url";
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
+// Always follows the OS/browser preference — no manual override, so this
+// only ever needs to read prefers-color-scheme, never localStorage.
+const THEME_INIT_SCRIPT = `(function(){try{var dark=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.style.colorScheme=dark?'dark':'light';}catch(e){}})();`;
 
 export const Route = createRootRoute({
 	head: () => ({
@@ -38,14 +33,6 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-	// The room route owns a fixed bottom bar (ParticipantBar) with no space
-	// reserved for a global marketing footer — hide it there instead of
-	// letting the two overlap.
-	const pathname = useRouterState({
-		select: (state) => state.location.pathname,
-	});
-	const hideFooter = pathname.startsWith("/room/");
-
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
@@ -53,9 +40,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(37,99,235,0.24)]">
-				<Header />
 				{children}
-				{!hideFooter && <Footer />}
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

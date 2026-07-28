@@ -33,7 +33,7 @@ export function RoomEndedView({ state }: { state: EndedState }) {
 	const copy = COPY[state];
 
 	return (
-		<main className="page-wrap flex min-h-dvh flex-col items-center justify-center gap-3 px-4 text-center">
+		<main className="page-wrap flex h-dvh flex-col items-center justify-center gap-3 px-4 text-center">
 			<p className="kicker">{copy.kicker}</p>
 			<h1 className="heading-lg text-2xl sm:text-3xl">{copy.heading}</h1>
 			<p className="text-muted text-sm">{copy.body}</p>

@@ -125,7 +125,7 @@ function Home() {
 	if (!hydrated) return null;
 
 	return (
-		<main className="page-wrap flex min-h-[calc(100vh-9rem)] flex-col items-center justify-center gap-6 px-4 py-14">
+		<main className="page-wrap flex h-dvh flex-col items-center justify-center gap-6 px-4">
 			<div className="home-aurora" aria-hidden />
 			<div className="rise-in max-w-md text-center">
 				<p className="kicker mb-2">BigPoker</p>

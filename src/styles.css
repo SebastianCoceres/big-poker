@@ -29,36 +29,12 @@
 	--color-warning: #b45309;
 }
 
-/* Same token names as @theme above — reassigning them here is how the
-   claro/oscuro/auto toggle (ThemeToggle.tsx) recolors every Tailwind utility
-   generated from those tokens (bg-blue, text-ink, border-line, etc.) without
-   any JS beyond flipping this attribute / class. */
-:root[data-theme="dark"] {
-	--color-ink: #e2e8f0;
-	--color-ink-soft: #94a3b8;
-	--color-blue: #2563eb;
-	--color-blue-deep: #93c5fd;
-	--color-violet: #a78bfa;
-	--color-sand: #0b1220;
-	--color-foam: #0e1730;
-	--color-surface: rgba(15, 23, 42, 0.78);
-	--color-surface-strong: rgba(9, 14, 28, 0.92);
-	--color-line: rgba(148, 163, 184, 0.18);
-	--color-glint: rgba(147, 197, 253, 0.14);
-	--color-kicker: #93c5fd;
-	--color-canvas: #0a0f1f;
-	--color-header: rgba(10, 15, 31, 0.82);
-	--color-chip: rgba(13, 20, 38, 0.9);
-	--color-chip-line: rgba(96, 165, 250, 0.24);
-	--color-link-hover: rgba(20, 28, 50, 0.82);
-	--color-aurora-a: rgba(59, 130, 246, 0.28);
-	--color-aurora-b: rgba(139, 92, 246, 0.2);
-	--color-danger: #f87171;
-	--color-warning: #fbbf24;
-}
-
+/* Same token names as @theme above — reassigning them here under the OS/
+   browser dark-mode media query is what recolors every Tailwind utility
+   generated from those tokens (bg-blue, text-ink, border-line, etc.). No
+   manual override exists — the app always follows the system preference. */
 @media (prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) {
+	:root {
 		--color-ink: #e2e8f0;
 		--color-ink-soft: #94a3b8;
 		--color-blue: #2563eb;
@@ -90,12 +66,12 @@
 html,
 body,
 #app {
-	min-height: 100%;
+	height: 100%;
 }
 
 body {
 	margin: 0;
-	overflow-x: hidden;
+	overflow: hidden;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	background:
@@ -166,7 +142,7 @@ pre code {
 }
 
 .page-wrap {
-	width: min(1080px, calc(100% - 2rem));
+	width: min(430px, calc(100% - 2rem));
 	margin-inline: auto;
 }
 

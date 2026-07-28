@@ -56,7 +56,7 @@ function RoomPage() {
 
 	if (!identity) {
 		return (
-			<main className="page-wrap flex min-h-dvh flex-col items-center justify-center px-4">
+			<main className="page-wrap flex h-dvh flex-col items-center justify-center px-4">
 				<JoinForm code={code} onJoined={setIdentity} />
 			</main>
 		);
@@ -76,7 +76,7 @@ function RoomPage() {
 		<>
 			{/* pb reserves room for the fixed ParticipantBar below so the last
 			    section never sits underneath it. */}
-			<main className="page-wrap flex min-h-dvh flex-col gap-4 px-4 pb-32 pt-6">
+			<main className="page-wrap flex h-dvh flex-col gap-4 px-4 pb-32 pt-6">
 				<ConnectionBanner
 					connectionState={connectionState}
 					snapshot={snapshot}
