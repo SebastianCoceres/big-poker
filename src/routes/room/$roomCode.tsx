@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { CardBoard } from "#/components/room/CardBoard";
 import { ConnectionBanner } from "#/components/room/ConnectionBanner";
 import { JoinForm } from "#/components/room/JoinForm";
+import { LeaveRoomButton } from "#/components/room/LeaveRoomButton";
 import { ParticipantBar } from "#/components/room/ParticipantBar";
 import { QuestionPanel } from "#/components/room/QuestionPanel";
 import { ResultsPanel } from "#/components/room/ResultsPanel";
-import { RoomCodeChip } from "#/components/room/RoomCodeChip";
+import { RoomControlIsland } from "#/components/room/RoomControlIsland";
 import { WaitingState } from "#/components/room/WaitingState";
 import { useParticipantIdentity } from "#/hooks/useParticipantIdentity";
 import { useRoomStream } from "#/hooks/useRoomStream";
@@ -100,7 +101,15 @@ function RoomBody({
 
 	return (
 		<div className="flex flex-col gap-4">
-			{isMaster && <RoomCodeChip code={code} />}
+			{isMaster ? (
+				<RoomControlIsland
+					code={code}
+					participantId={myId}
+					snapshot={snapshot}
+				/>
+			) : (
+				<LeaveRoomButton code={code} participantId={myId} />
+			)}
 			{isMaster && snapshot.status === "waiting" && (
 				<QuestionPanel code={code} participantId={myId} snapshot={snapshot} />
 			)}

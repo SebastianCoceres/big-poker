@@ -1,4 +1,6 @@
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { ISLAND_SPRING } from "#/lib/motion";
 import type { RoomSnapshot } from "#/server/rooms.server";
 
 const AVATAR_COLORS = [
@@ -44,8 +46,13 @@ function Avatar({
 	const showVote = status === "revealed";
 
 	return (
-		<li
-			className="flex flex-shrink-0 flex-col items-center gap-1"
+		<motion.li
+			layout
+			initial={{ opacity: 0, scale: 0.4, y: 12 }}
+			animate={{ opacity: 1, scale: 1, y: 0 }}
+			exit={{ opacity: 0, scale: 0.4, y: 12 }}
+			transition={ISLAND_SPRING}
+			className="flex shrink-0 flex-col items-center gap-1"
 			title={participant.name}
 		>
 			{/* Opacity dims only this inner circle — the badge below is a
@@ -53,7 +60,7 @@ function Avatar({
 			    becomes illegible. */}
 			<div className="relative h-12 w-12">
 				<div
-					className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white transition ${
+					className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white transition-opacity duration-300 ${
 						participant.connected ? "" : "opacity-40"
 					} ${
 						participant.isMaster
@@ -75,10 +82,7 @@ function Avatar({
 					</span>
 				)}
 			</div>
-			<span className="text-ink-soft max-w-12 truncate text-[10px]">
-				{participant.name}
-			</span>
-		</li>
+		</motion.li>
 	);
 }
 
@@ -88,53 +92,84 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 	const overflow = snapshot.participants.slice(VISIBLE_LIMIT);
 
 	return (
-		<nav className="border-line bg-header fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur-lg">
-			{expanded && overflow.length > 0 && (
-				<div className="border-line bg-header shadow-ink/10 absolute inset-x-4 bottom-full mb-2 max-h-64 overflow-y-auto rounded-2xl border p-3 shadow-xl backdrop-blur-lg">
-					<p className="kicker mb-2">Más participantes</p>
-					<ul className="flex flex-col gap-2">
-						{overflow.map((p) => (
-							<li
-								key={p.id}
-								className="flex items-center justify-between gap-2 text-sm"
-							>
-								<span className={p.connected ? "" : "opacity-40"}>
-									{p.name}
-									{p.isMaster ? " · master" : ""}
-								</span>
-								{snapshot.status === "voting" &&
-									(p.hasVoted ? (
-										<span className="pill">✓</span>
-									) : (
-										<span className="text-muted text-xs">esperando</span>
-									))}
-								{snapshot.status === "revealed" && (
-									<span className="pill">{p.vote ?? "–"}</span>
-								)}
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-			<ul className="mx-auto flex max-w-3xl list-none items-start gap-3 overflow-x-auto px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-				{visible.map((p) => (
-					<Avatar key={p.id} participant={p} status={snapshot.status} />
-				))}
-				{overflow.length > 0 && (
-					<li className="flex flex-shrink-0 flex-col items-center gap-1">
-						<button
-							type="button"
-							onClick={() => setExpanded((v) => !v)}
-							aria-expanded={expanded}
-							aria-label={`Ver ${overflow.length} participantes más`}
-							className="border-chip-line bg-chip text-ink flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition hover:-translate-y-0.5"
+		<nav
+			aria-label="Participantes conectados"
+			className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] z-40 flex justify-center px-4"
+		>
+			{/* A fixed, generous corner radius (not rounded-full) is what makes this
+			    read as Apple's Dynamic Island rather than a stretched pill: short
+			    and it looks like a capsule, tall (overflow open) and it still looks
+			    like one continuous shape instead of ballooning into a circle. */}
+			<motion.div
+				layout
+				transition={ISLAND_SPRING}
+				className="border-line bg-header shadow-ink/20 pointer-events-auto flex w-fit max-w-full flex-col overflow-hidden rounded-full border shadow-2xl backdrop-blur-xl"
+			>
+				<AnimatePresence initial={false}>
+					{expanded && overflow.length > 0 && (
+						<motion.div
+							key="overflow"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							transition={ISLAND_SPRING}
+							className="max-h-64 overflow-y-auto px-4 pt-3"
 						>
-							+{overflow.length}
-						</button>
-						<span className="text-ink-soft text-[10px]">más</span>
-					</li>
-				)}
-			</ul>
+							<p className="kicker mb-2">Más participantes</p>
+							<ul className="flex flex-col gap-2 pb-1">
+								{overflow.map((p) => (
+									<li
+										key={p.id}
+										className="flex items-center justify-between gap-2 text-sm"
+									>
+										<span className={p.connected ? "" : "opacity-40"}>
+											{p.name}
+											{p.isMaster ? " · master" : ""}
+										</span>
+										{snapshot.status === "voting" &&
+											(p.hasVoted ? (
+												<span className="pill">✓</span>
+											) : (
+												<span className="text-muted text-xs">esperando</span>
+											))}
+										{snapshot.status === "revealed" && (
+											<span className="pill">{p.vote ?? "–"}</span>
+										)}
+									</li>
+								))}
+							</ul>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<motion.ul
+					layout
+					className="flex list-none items-start gap-3 overflow-x-auto p-2"
+				>
+					<AnimatePresence initial={false}>
+						{visible.map((p) => (
+							<Avatar key={p.id} participant={p} status={snapshot.status} />
+						))}
+					</AnimatePresence>
+					{overflow.length > 0 && (
+						<motion.li
+							layout
+							className="flex shrink-0 flex-col items-center gap-1"
+						>
+							<button
+								type="button"
+								onClick={() => setExpanded((v) => !v)}
+								aria-expanded={expanded}
+								aria-label={`Ver ${overflow.length} participantes más`}
+								className="border-chip-line bg-chip text-ink focus-visible:ring-blue-deep flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition hover:-translate-y-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2"
+							>
+								+{overflow.length}
+							</button>
+							<span className="text-ink-soft text-[10px]">más</span>
+						</motion.li>
+					)}
+				</motion.ul>
+			</motion.div>
 		</nav>
 	);
 }

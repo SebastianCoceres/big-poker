@@ -5,7 +5,9 @@ export type ConnectionState =
 	| "connecting"
 	| "connected"
 	| "reconnecting"
-	| "room-gone";
+	| "room-gone"
+	| "closed"
+	| "kicked";
 
 export function useRoomStream(code: string, participantId: string | null) {
 	const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
@@ -23,6 +25,17 @@ export function useRoomStream(code: string, participantId: string | null) {
 		es.addEventListener("snapshot", (event) => {
 			setSnapshot(JSON.parse((event as MessageEvent).data));
 			setConnectionState("connected");
+		});
+
+		// Explicit signals from the server — not errors, so they bypass
+		// onerror's reconnect-vs-gone guesswork entirely.
+		es.addEventListener("closed", () => {
+			setConnectionState("closed");
+			es.close();
+		});
+		es.addEventListener("kicked", () => {
+			setConnectionState("kicked");
+			es.close();
 		});
 
 		es.onerror = () => {

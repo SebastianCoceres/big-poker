@@ -3,8 +3,11 @@ import type { CardValue } from "#/lib/fibonacci";
 import {
 	castVote,
 	closeResult,
+	closeRoom,
 	createRoom,
 	joinRoom,
+	kickParticipant,
+	leaveRoom,
 	reveal,
 	startRound,
 } from "#/server/rooms.server";
@@ -89,3 +92,29 @@ export const closeResultFn = createServerFn({ method: "POST" })
 		participantId: requireString(data.participantId, "participantId"),
 	}))
 	.handler(async ({ data }) => closeResult(data.code, data.participantId));
+
+export const leaveRoomFn = createServerFn({ method: "POST" })
+	.validator((data: { code: string; participantId: string }) => ({
+		code: requireString(data.code, "code"),
+		participantId: requireString(data.participantId, "participantId"),
+	}))
+	.handler(async ({ data }) => leaveRoom(data.code, data.participantId));
+
+export const closeRoomFn = createServerFn({ method: "POST" })
+	.validator((data: { code: string; participantId: string }) => ({
+		code: requireString(data.code, "code"),
+		participantId: requireString(data.participantId, "participantId"),
+	}))
+	.handler(async ({ data }) => closeRoom(data.code, data.participantId));
+
+export const kickParticipantFn = createServerFn({ method: "POST" })
+	.validator(
+		(data: { code: string; participantId: string; targetId: string }) => ({
+			code: requireString(data.code, "code"),
+			participantId: requireString(data.participantId, "participantId"),
+			targetId: requireString(data.targetId, "targetId"),
+		}),
+	)
+	.handler(async ({ data }) =>
+		kickParticipant(data.code, data.participantId, data.targetId),
+	);

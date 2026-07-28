@@ -22,6 +22,30 @@ export function ConnectionBanner({
 		);
 	}
 
+	if (connectionState === "closed") {
+		return (
+			<p className="alert alert-danger text-sm">
+				El organizador cerró la sala.{" "}
+				<a href="/" className="font-semibold underline">
+					Volver al inicio
+				</a>
+				.
+			</p>
+		);
+	}
+
+	if (connectionState === "kicked") {
+		return (
+			<p className="alert alert-danger text-sm">
+				Te sacaron de esta sala.{" "}
+				<a href="/" className="font-semibold underline">
+					Volver al inicio
+				</a>
+				.
+			</p>
+		);
+	}
+
 	if (connectionState === "reconnecting") {
 		return <p className="alert text-sm">Reconectando...</p>;
 	}

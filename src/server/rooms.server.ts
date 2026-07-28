@@ -51,7 +51,9 @@ export type RoomErrorCode =
 	| "INVALID_QUESTION"
 	| "INVALID_VOTE"
 	| "STALE_ROUND"
-	| "ROOM_CODE_EXHAUSTED";
+	| "ROOM_CODE_EXHAUSTED"
+	| "MASTER_CANNOT_LEAVE"
+	| "CANNOT_KICK_SELF";
 
 export type Result<T> =
 	| { ok: true; data: T }
@@ -71,6 +73,12 @@ interface Registry {
 	// from the 6h sweep so a room with zero connected participants can be
 	// closed on a much shorter, more intentional grace period.
 	emptyRoomTimers: Map<string, ReturnType<typeof setTimeout>>;
+	// Keyed by `${roomCode}:${participantId}` -> pending "remove this ghost
+	// participant" timeout. A participant losing their SSE connection (tab
+	// closed, network drop) doesn't mean they left for good — a page refresh
+	// looks identical from the server's side until the reconnect either shows
+	// up (timer gets cancelled) or doesn't (timer fires and prunes them).
+	participantLeaveTimers: Map<string, ReturnType<typeof setTimeout>>;
 }
 
 // Guarded on globalThis so Vite's SSR module re-execution on file edits (dev
@@ -80,6 +88,7 @@ const registry: Registry = g.__bigPokerRegistry ?? {
 	rooms: new Map(),
 	subscribers: new Map(),
 	emptyRoomTimers: new Map(),
+	participantLeaveTimers: new Map(),
 };
 if (import.meta.env.DEV) g.__bigPokerRegistry = registry;
 
@@ -91,6 +100,44 @@ const SWEEP_INTERVAL_MS = 5 * 60 * 1000;
 // quick page refresh without losing the room. The 6h sweep above stays as a
 // safety net for anything this misses.
 const EMPTY_ROOM_GRACE_MS = 2 * 60 * 1000;
+// Grace period before a single disconnected participant is pruned from the
+// roster — shorter than EMPTY_ROOM_GRACE_MS since EventSource's own built-in
+// retry reconnects within a few seconds on a transient drop; this just covers
+// that window plus some slack, not a full page-refresh-level grace.
+const PARTICIPANT_LEAVE_GRACE_MS = 20 * 1000;
+
+function participantLeaveTimerKey(code: string, participantId: string): string {
+	return `${code}:${participantId}`;
+}
+
+function cancelParticipantLeaveTimer(
+	code: string,
+	participantId: string,
+): void {
+	const key = participantLeaveTimerKey(code, participantId);
+	const timer = registry.participantLeaveTimers.get(key);
+	if (!timer) return;
+	clearTimeout(timer);
+	registry.participantLeaveTimers.delete(key);
+}
+
+function scheduleParticipantRemoval(code: string, participantId: string): void {
+	cancelParticipantLeaveTimer(code, participantId);
+	const key = participantLeaveTimerKey(code, participantId);
+	const timer = setTimeout(() => {
+		registry.participantLeaveTimers.delete(key);
+		// Reconnected during the grace period — nothing to prune.
+		if (isConnected(code, participantId)) return;
+		const room = registry.rooms.get(code);
+		if (!room) return;
+		if (room.participants.delete(participantId)) {
+			room.lastActivityAt = Date.now();
+			broadcast(code);
+		}
+	}, PARTICIPANT_LEAVE_GRACE_MS);
+	timer.unref?.();
+	registry.participantLeaveTimers.set(key, timer);
+}
 
 function cancelEmptyRoomTimer(code: string): void {
 	const timer = registry.emptyRoomTimers.get(code);
@@ -235,6 +282,8 @@ export function subscribe(
 	// Someone (re)connected — cancel any pending "close this empty room" timer
 	// (e.g. a quick page refresh that briefly dropped the last connection).
 	cancelEmptyRoomTimer(code);
+	// This specific participant is back — cancel their pending ghost-removal.
+	cancelParticipantLeaveTimer(code, participantId);
 
 	let byParticipant = registry.subscribers.get(code);
 	if (!byParticipant) {
@@ -255,7 +304,10 @@ export function subscribe(
 
 	return () => {
 		senders?.delete(send);
-		if (senders && senders.size === 0) byParticipant?.delete(participantId);
+		if (senders && senders.size === 0) {
+			byParticipant?.delete(participantId);
+			scheduleParticipantRemoval(code, participantId);
+		}
 		if ((byParticipant?.size ?? 0) === 0) scheduleEmptyRoomCleanup(code);
 		broadcast(code);
 	};
@@ -453,4 +505,98 @@ export function closeResult(
 		broadcast(room.code);
 	}
 	return { ok: true, data: toSnapshot(room) };
+}
+
+export function leaveRoom(
+	code: string,
+	participantId: string,
+): Result<RoomSnapshot> {
+	const room = getRoom(code);
+	if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
+	// The master has no seat to hand off to — closing the room is the only
+	// way out for them, mirrors reveal()/closeResult() requiring a role.
+	if (room.masterId === participantId) {
+		return { ok: false, error: "MASTER_CANNOT_LEAVE" };
+	}
+
+	// Idempotent no-op if already gone (double-click), mirrors reveal/closeResult.
+	if (room.participants.delete(participantId)) {
+		cancelParticipantLeaveTimer(code, participantId);
+		room.lastActivityAt = Date.now();
+
+		// Drop the leaving participant's own subscriber entry BEFORE the
+		// general broadcast below — same reasoning as kickParticipant(): their
+		// tab is about to navigate away on its own, but the client's own
+		// EventSource is still open at this point (navigate() hasn't unmounted
+		// it yet). One more "snapshot" without themselves would trigger the
+		// "rejoin if my seat is missing" effect and silently undo the leave.
+		registry.subscribers.get(code)?.delete(participantId);
+		broadcast(room.code);
+	}
+	return { ok: true, data: toSnapshot(room, participantId) };
+}
+
+export function kickParticipant(
+	code: string,
+	participantId: string,
+	targetId: string,
+): Result<RoomSnapshot> {
+	const room = getRoom(code);
+	if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
+	if (room.masterId !== participantId)
+		return { ok: false, error: "NOT_MASTER" };
+	if (targetId === participantId)
+		return { ok: false, error: "CANNOT_KICK_SELF" };
+
+	if (room.participants.delete(targetId)) {
+		cancelParticipantLeaveTimer(code, targetId);
+		room.lastActivityAt = Date.now();
+
+		// Drop the kicked participant's own subscriber entry and tell them
+		// directly BEFORE the general broadcast below. Otherwise they'd still
+		// receive one more "snapshot" without themselves in it, and the
+		// client's own "rejoin if my seat is missing" effect would silently
+		// undo the kick by rejoining them on the spot.
+		const byParticipant = registry.subscribers.get(code);
+		const targetSenders = byParticipant?.get(targetId);
+		if (targetSenders) {
+			for (const send of targetSenders) {
+				try {
+					send("kicked", {});
+				} catch {
+					// Stream already dead — nothing to notify.
+				}
+			}
+			byParticipant?.delete(targetId);
+		}
+		broadcast(room.code);
+	}
+	return { ok: true, data: toSnapshot(room, participantId) };
+}
+
+export function closeRoom(code: string, participantId: string): Result<true> {
+	const room = getRoom(code);
+	if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
+	if (room.masterId !== participantId)
+		return { ok: false, error: "NOT_MASTER" };
+
+	const byParticipant = registry.subscribers.get(code);
+	if (byParticipant) {
+		for (const senders of byParticipant.values()) {
+			for (const send of senders) {
+				try {
+					send("closed", {});
+				} catch {
+					// Stream already dead — nothing to notify.
+				}
+			}
+		}
+	}
+	cancelEmptyRoomTimer(code);
+	for (const pid of room.participants.keys()) {
+		cancelParticipantLeaveTimer(code, pid);
+	}
+	registry.rooms.delete(code);
+	registry.subscribers.delete(code);
+	return { ok: true, data: true };
 }
