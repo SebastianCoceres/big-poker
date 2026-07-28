@@ -23,21 +23,27 @@ function requireCardValue(value: unknown): CardValue {
 	return value as CardValue;
 }
 
+function optionalString(value: unknown, field: string): string | undefined {
+	if (value === undefined) return undefined;
+	return requireString(value, field);
+}
+
 export const createRoomFn = createServerFn({ method: "POST" })
-	.validator((data: { participantId: string; name: string }) => ({
-		participantId: requireString(data.participantId, "participantId"),
+	.validator((data: { name: string }) => ({
 		name: requireString(data.name, "name"),
 	}))
-	.handler(async ({ data }) => createRoom(data.participantId, data.name));
+	.handler(async ({ data }) => createRoom(data.name));
 
 export const joinRoomFn = createServerFn({ method: "POST" })
-	.validator((data: { code: string; participantId: string; name: string }) => ({
-		code: requireString(data.code, "code"),
-		participantId: requireString(data.participantId, "participantId"),
-		name: requireString(data.name, "name"),
-	}))
+	.validator(
+		(data: { code: string; name: string; participantId?: string }) => ({
+			code: requireString(data.code, "code"),
+			name: requireString(data.name, "name"),
+			participantId: optionalString(data.participantId, "participantId"),
+		}),
+	)
 	.handler(async ({ data }) =>
-		joinRoom(data.code, data.participantId, data.name),
+		joinRoom(data.code, data.name, data.participantId),
 	);
 
 export const startRoundFn = createServerFn({ method: "POST" })

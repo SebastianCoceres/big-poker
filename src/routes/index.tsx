@@ -73,23 +73,21 @@ function Home() {
 		setCreateError(null);
 		setCreating(true);
 		try {
-			const participantId = crypto.randomUUID();
-			const result = await createRoomFn({
-				data: { participantId, name: displayName },
-			});
+			const result = await createRoomFn({ data: { name: displayName } });
 			if (!result.ok) {
 				setCreateError(errorMessage(result.error));
 				return;
 			}
-			writeParticipantIdentity(result.data.code, {
-				participantId,
+			writeParticipantIdentity(result.data.snapshot.code, {
+				participantId: result.data.participantId,
 				name: displayName,
 			});
 			navigate({
 				to: "/room/$roomCode",
-				params: { roomCode: result.data.code },
+				params: { roomCode: result.data.snapshot.code },
 			});
-		} catch {
+		} catch (err) {
+			console.error("[createRoomFn] request failed", err);
 			setCreateError("No pudimos crear la sala. Probá de nuevo.");
 		} finally {
 			setCreating(false);
@@ -102,20 +100,20 @@ function Home() {
 		setJoining(true);
 		const code = normalizeRoomCode(joinCode);
 		try {
-			const participantId = crypto.randomUUID();
 			const result = await joinRoomFn({
-				data: { code, participantId, name: displayName },
+				data: { code, name: displayName },
 			});
 			if (!result.ok) {
 				setJoinError(errorMessage(result.error));
 				return;
 			}
 			writeParticipantIdentity(code, {
-				participantId,
+				participantId: result.data.participantId,
 				name: displayName,
 			});
 			navigate({ to: "/room/$roomCode", params: { roomCode: code } });
-		} catch {
+		} catch (err) {
+			console.error("[joinRoomFn] request failed", err);
 			setJoinError("No pudimos unirte a la sala. Probá de nuevo.");
 		} finally {
 			setJoining(false);
