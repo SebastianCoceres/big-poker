@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { AnimatedResultNumber } from "#/components/room/AnimatedResultNumber";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { closeResultFn } from "#/features/room/interface-adapters/room.controllers";
+import { AnimatedResultNumber } from "#/features/room/ui/AnimatedResultNumber";
 
 export function ResultsPanel({
 	code,

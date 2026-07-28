@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { ISLAND_SPRING } from "#/lib/motion";
+import { ISLAND_SPRING } from "#/shared/lib/motion";
 
 const AVATAR_COLORS = [
 	"#2563eb",

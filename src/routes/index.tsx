@@ -3,14 +3,14 @@ import { type FormEvent, useEffect, useState } from "react";
 import type { RoomErrorCode } from "#/features/room/domain/entities";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
 import {
-	createRoomFn,
-	joinRoomFn,
-} from "#/features/room/interface-adapters/room.controllers";
-import {
 	readDisplayName,
 	writeDisplayName,
 	writeParticipantIdentity,
-} from "#/hooks/useParticipantIdentity";
+} from "#/features/room/hooks/useParticipantIdentity";
+import {
+	createRoomFn,
+	joinRoomFn,
+} from "#/features/room/interface-adapters/room.controllers";
 
 export const Route = createFileRoute("/")({ component: Home });
 

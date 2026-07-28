@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import Stack from "#/components/Stack";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { CARD_VALUES, type CardValue } from "#/features/room/domain/voting";
 import { castVoteFn } from "#/features/room/interface-adapters/room.controllers";
+import Stack from "#/shared/ui/Stack";
 
 type SendState = "idle" | "sending" | "error";
 
