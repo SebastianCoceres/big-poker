@@ -1,13 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { type FormEvent, useEffect, useState } from "react";
+import type { RoomErrorCode } from "#/features/room/domain/entities";
+import { normalizeRoomCode } from "#/features/room/domain/room-code";
+import {
+	createRoomFn,
+	joinRoomFn,
+} from "#/features/room/interface-adapters/room.controllers";
 import {
 	readDisplayName,
 	writeDisplayName,
 	writeParticipantIdentity,
 } from "#/hooks/useParticipantIdentity";
-import { normalizeRoomCode } from "#/lib/room-code";
-import { createRoomFn, joinRoomFn } from "#/server/rooms.functions";
-import type { RoomErrorCode } from "#/server/rooms.server";
 
 export const Route = createFileRoute("/")({ component: Home });
 

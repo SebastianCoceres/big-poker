@@ -1,6 +1,6 @@
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
-import { FIBONACCI_SCALE } from "#/lib/fibonacci";
+import { FIBONACCI_SCALE } from "#/features/room/domain/voting";
 
 const CYCLE_DURATION_MS = 700;
 const CYCLE_INTERVAL_MS = 110;

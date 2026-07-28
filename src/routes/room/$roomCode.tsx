@@ -10,11 +10,11 @@ import { ResultsPanel } from "#/components/room/ResultsPanel";
 import { RoomControlIsland } from "#/components/room/RoomControlIsland";
 import { RoomEndedView } from "#/components/room/RoomEndedView";
 import { WaitingState } from "#/components/room/WaitingState";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
+import { normalizeRoomCode } from "#/features/room/domain/room-code";
+import { joinRoomFn } from "#/features/room/interface-adapters/room.controllers";
 import { useParticipantIdentity } from "#/hooks/useParticipantIdentity";
 import { useRoomStream } from "#/hooks/useRoomStream";
-import { normalizeRoomCode } from "#/lib/room-code";
-import { joinRoomFn } from "#/server/rooms.functions";
-import type { RoomSnapshot } from "#/server/rooms.server";
 
 export const Route = createFileRoute("/room/$roomCode")({
 	component: RoomPage,

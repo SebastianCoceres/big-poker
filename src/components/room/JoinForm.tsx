@@ -1,11 +1,11 @@
 import { type FormEvent, useEffect, useState } from "react";
+import type { RoomErrorCode } from "#/features/room/domain/entities";
+import { joinRoomFn } from "#/features/room/interface-adapters/room.controllers";
 import {
 	type ParticipantIdentity,
 	readDisplayName,
 	writeDisplayName,
 } from "#/hooks/useParticipantIdentity";
-import { joinRoomFn } from "#/server/rooms.functions";
-import type { RoomErrorCode } from "#/server/rooms.server";
 
 function errorMessage(error: RoomErrorCode): string {
 	switch (error) {

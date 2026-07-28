@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
-import { startRoundFn } from "#/server/rooms.functions";
-import type { RoomSnapshot } from "#/server/rooms.server";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
+import { startRoundFn } from "#/features/room/interface-adapters/room.controllers";
 
 export function QuestionPanel({
 	code,

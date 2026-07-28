@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { RoomSnapshot } from "#/server/rooms.server";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
 
 export type ConnectionState =
 	| "connecting"

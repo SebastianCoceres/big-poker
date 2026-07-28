@@ -1,9 +1,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { ConfirmButton } from "#/components/room/ConfirmButton";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
+import {
+	closeRoomFn,
+	kickParticipantFn,
+} from "#/features/room/interface-adapters/room.controllers";
 import { ISLAND_SPRING } from "#/lib/motion";
-import { closeRoomFn, kickParticipantFn } from "#/server/rooms.functions";
-import type { RoomSnapshot } from "#/server/rooms.server";
 
 const COPIED_RESET_MS = 2000;
 

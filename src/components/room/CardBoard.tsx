@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import Stack from "#/components/Stack";
-import { CARD_VALUES, type CardValue } from "#/lib/fibonacci";
-import { castVoteFn } from "#/server/rooms.functions";
-import type { RoomSnapshot } from "#/server/rooms.server";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
+import { CARD_VALUES, type CardValue } from "#/features/room/domain/voting";
+import { castVoteFn } from "#/features/room/interface-adapters/room.controllers";
 
 type SendState = "idle" | "sending" | "error";
 

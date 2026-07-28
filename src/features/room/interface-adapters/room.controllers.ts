@@ -1,16 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { CardValue } from "#/lib/fibonacci";
-import {
-	castVote,
-	closeResult,
-	closeRoom,
-	createRoom,
-	joinRoom,
-	kickParticipant,
-	leaveRoom,
-	reveal,
-	startRound,
-} from "#/server/rooms.server";
+import type { CardValue } from "../domain/voting";
+import { container } from "../infrastructure/container";
 
 function requireString(value: unknown, field: string): string {
 	if (typeof value !== "string") throw new Error(`${field} must be a string`);
@@ -22,7 +12,7 @@ function requireCardValue(value: unknown): CardValue {
 		throw new Error("card must be a string or number");
 	}
 	// Membership in the Fibonacci scale / special cards is a business rule,
-	// not a shape check — validated inside castVote() (-> INVALID_VOTE).
+	// not a shape check — validated inside CastVoteUseCase (-> INVALID_VOTE).
 	return value as CardValue;
 }
 
@@ -35,7 +25,7 @@ export const createRoomFn = createServerFn({ method: "POST" })
 	.validator((data: { name: string }) => ({
 		name: requireString(data.name, "name"),
 	}))
-	.handler(async ({ data }) => createRoom(data.name));
+	.handler(async ({ data }) => container.createRoomUseCase.execute(data.name));
 
 export const joinRoomFn = createServerFn({ method: "POST" })
 	.validator(
@@ -46,7 +36,7 @@ export const joinRoomFn = createServerFn({ method: "POST" })
 		}),
 	)
 	.handler(async ({ data }) =>
-		joinRoom(data.code, data.name, data.participantId),
+		container.joinRoomUseCase.execute(data.code, data.name, data.participantId),
 	);
 
 export const startRoundFn = createServerFn({ method: "POST" })
@@ -58,7 +48,11 @@ export const startRoundFn = createServerFn({ method: "POST" })
 		}),
 	)
 	.handler(async ({ data }) =>
-		startRound(data.code, data.participantId, data.question),
+		container.startRoundUseCase.execute(
+			data.code,
+			data.participantId,
+			data.question,
+		),
 	);
 
 export const castVoteFn = createServerFn({ method: "POST" })
@@ -76,7 +70,12 @@ export const castVoteFn = createServerFn({ method: "POST" })
 		}),
 	)
 	.handler(async ({ data }) =>
-		castVote(data.code, data.participantId, data.roundId, data.card),
+		container.castVoteUseCase.execute(
+			data.code,
+			data.participantId,
+			data.roundId,
+			data.card,
+		),
 	);
 
 export const revealFn = createServerFn({ method: "POST" })
@@ -84,28 +83,36 @@ export const revealFn = createServerFn({ method: "POST" })
 		code: requireString(data.code, "code"),
 		participantId: requireString(data.participantId, "participantId"),
 	}))
-	.handler(async ({ data }) => reveal(data.code, data.participantId));
+	.handler(async ({ data }) =>
+		container.revealUseCase.execute(data.code, data.participantId),
+	);
 
 export const closeResultFn = createServerFn({ method: "POST" })
 	.validator((data: { code: string; participantId: string }) => ({
 		code: requireString(data.code, "code"),
 		participantId: requireString(data.participantId, "participantId"),
 	}))
-	.handler(async ({ data }) => closeResult(data.code, data.participantId));
+	.handler(async ({ data }) =>
+		container.closeResultUseCase.execute(data.code, data.participantId),
+	);
 
 export const leaveRoomFn = createServerFn({ method: "POST" })
 	.validator((data: { code: string; participantId: string }) => ({
 		code: requireString(data.code, "code"),
 		participantId: requireString(data.participantId, "participantId"),
 	}))
-	.handler(async ({ data }) => leaveRoom(data.code, data.participantId));
+	.handler(async ({ data }) =>
+		container.leaveRoomUseCase.execute(data.code, data.participantId),
+	);
 
 export const closeRoomFn = createServerFn({ method: "POST" })
 	.validator((data: { code: string; participantId: string }) => ({
 		code: requireString(data.code, "code"),
 		participantId: requireString(data.participantId, "participantId"),
 	}))
-	.handler(async ({ data }) => closeRoom(data.code, data.participantId));
+	.handler(async ({ data }) =>
+		container.closeRoomUseCase.execute(data.code, data.participantId),
+	);
 
 export const kickParticipantFn = createServerFn({ method: "POST" })
 	.validator(
@@ -116,5 +123,9 @@ export const kickParticipantFn = createServerFn({ method: "POST" })
 		}),
 	)
 	.handler(async ({ data }) =>
-		kickParticipant(data.code, data.participantId, data.targetId),
+		container.kickParticipantUseCase.execute(
+			data.code,
+			data.participantId,
+			data.targetId,
+		),
 	);

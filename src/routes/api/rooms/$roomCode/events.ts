@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { normalizeRoomCode } from "#/lib/room-code";
-import { getRoom, subscribe, toSnapshotForCode } from "#/server/rooms.server";
+import { normalizeRoomCode } from "#/features/room/domain/room-code";
+import { container } from "#/features/room/infrastructure/container";
 
 const HEARTBEAT_INTERVAL_MS = 25_000;
 
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/api/rooms/$roomCode/events")({
 					return new Response("participantId is required", { status: 400 });
 				}
 
-				if (!getRoom(code)) {
+				if (!container.roomRepository.findByCode(code)) {
 					// No retry from EventSource on a non-200 response — the client
 					// treats this as "the room is gone", not a transient drop.
 					return new Response("Room not found", { status: 404 });
@@ -38,8 +38,15 @@ export const Route = createFileRoute("/api/rooms/$roomCode/events")({
 
 						// Subscribe FIRST, then snapshot — otherwise this connection's own
 						// "connected" flag would be stale (computed before it existed).
-						unsubscribe = subscribe(code, participantId, send);
-						const initialSnapshot = toSnapshotForCode(code, participantId);
+						unsubscribe = container.roomRealtimeGateway.subscribe(
+							code,
+							participantId,
+							send,
+						);
+						const initialSnapshot = container.getRoomSnapshotUseCase.execute(
+							code,
+							participantId,
+						);
 						if (initialSnapshot) send("snapshot", initialSnapshot);
 
 						heartbeat = setInterval(() => {
