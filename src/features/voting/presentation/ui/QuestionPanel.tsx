@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { startRoundFn } from "#/features/voting/interface-adapters/voting.controllers";
+import { startRoundFn } from "#/features/voting/infrastructure/voting.controllers";
 
 export function QuestionPanel({
 	code,

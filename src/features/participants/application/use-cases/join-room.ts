@@ -1,3 +1,5 @@
+import { isNameTaken } from "#/features/participants/domain/participant-name";
+import type { JoinedRoom } from "#/features/room/application/dtos";
 import type {
 	RoomRealtimeGateway,
 	RoomRepository,
@@ -7,8 +9,8 @@ import {
 	broadcastRoomSnapshot,
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
-import { cleanText, isNameTaken } from "#/features/room/application/text";
-import type { JoinedRoom, Result } from "#/features/room/domain/entities";
+import { cleanText } from "#/features/room/application/text";
+import type { Result } from "#/features/room/domain/result";
 
 export class JoinRoomUseCase {
 	constructor(

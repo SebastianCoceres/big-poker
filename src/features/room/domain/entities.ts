@@ -43,24 +43,3 @@ export interface RoomSnapshot {
 		voteCount: number;
 	} | null;
 }
-
-export type RoomErrorCode =
-	| "ROOM_NOT_FOUND"
-	| "NOT_MASTER"
-	| "INVALID_NAME"
-	| "NAME_TAKEN"
-	| "INVALID_QUESTION"
-	| "INVALID_VOTE"
-	| "STALE_ROUND"
-	| "ROOM_CODE_EXHAUSTED"
-	| "MASTER_CANNOT_LEAVE"
-	| "CANNOT_KICK_SELF";
-
-export type Result<T> =
-	| { ok: true; data: T }
-	| { ok: false; error: RoomErrorCode };
-
-export interface JoinedRoom {
-	participantId: string;
-	snapshot: RoomSnapshot;
-}

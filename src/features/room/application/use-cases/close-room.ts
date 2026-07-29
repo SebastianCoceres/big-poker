@@ -1,4 +1,4 @@
-import type { Result } from "../../domain/entities";
+import type { Result } from "../../domain/result";
 import type { RoomRealtimeGateway, RoomRepository } from "../ports";
 
 export class CloseRoomUseCase {

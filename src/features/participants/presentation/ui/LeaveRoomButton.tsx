@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { leaveRoomFn } from "#/features/participants/interface-adapters/participant.controllers";
+import { leaveRoomFn } from "#/features/participants/infrastructure/participant.controllers";
 import { ConfirmButton } from "#/shared/ui/ConfirmButton";
 
 export function LeaveRoomButton({

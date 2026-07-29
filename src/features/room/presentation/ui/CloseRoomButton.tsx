@@ -1,4 +1,4 @@
-import { closeRoomFn } from "#/features/room/interface-adapters/room.controllers";
+import { closeRoomFn } from "#/features/room/infrastructure/room.controllers";
 import { ConfirmButton } from "#/shared/ui/ConfirmButton";
 
 export function CloseRoomButton({

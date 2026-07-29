@@ -1,6 +1,8 @@
-import type { JoinedRoom, Result, Room } from "../../domain/entities";
+import type { Room } from "../../domain/entities";
+import type { Result } from "../../domain/result";
 import { generateRoomCode } from "../../domain/room-code";
 import { buildSnapshot } from "../../domain/snapshot";
+import type { JoinedRoom } from "../dtos";
 import type { RoomRepository } from "../ports";
 import { cleanText } from "../text";
 

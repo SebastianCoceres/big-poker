@@ -8,7 +8,8 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import { cleanText } from "#/features/room/application/text";
-import type { Result, RoomSnapshot } from "#/features/room/domain/entities";
+import type { RoomSnapshot } from "#/features/room/domain/entities";
+import type { Result } from "#/features/room/domain/result";
 
 export class StartRoundUseCase {
 	constructor(

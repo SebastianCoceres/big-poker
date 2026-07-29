@@ -1,4 +1,4 @@
-import { kickParticipantFn } from "#/features/participants/interface-adapters/participant.controllers";
+import { kickParticipantFn } from "#/features/participants/infrastructure/participant.controllers";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { ConfirmButton } from "#/shared/ui/ConfirmButton";
 

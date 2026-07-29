@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { closeResultFn } from "#/features/voting/interface-adapters/voting.controllers";
-import { AnimatedResultNumber } from "#/features/voting/ui/AnimatedResultNumber";
+import { closeResultFn } from "#/features/voting/infrastructure/voting.controllers";
+import { AnimatedResultNumber } from "#/features/voting/presentation/ui/AnimatedResultNumber";
 
 export function ResultsPanel({
 	code,

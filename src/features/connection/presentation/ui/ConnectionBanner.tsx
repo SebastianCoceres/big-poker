@@ -1,5 +1,5 @@
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import type { ConnectionState } from "#/features/room/hooks/useRoomStream";
+import type { ConnectionState } from "#/features/room/presentation/hooks/useRoomStream";
 
 export function ConnectionBanner({
 	connectionState,

@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { ParticipantManagementList } from "#/features/participants/ui/ParticipantManagementList";
+import { ParticipantManagementList } from "#/features/participants/presentation/ui/ParticipantManagementList";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { CloseRoomButton } from "#/features/room/ui/CloseRoomButton";
-import { CopyRoomCodeButton } from "#/features/room/ui/CopyRoomCodeButton";
+import { CloseRoomButton } from "#/features/room/presentation/ui/CloseRoomButton";
+import { CopyRoomCodeButton } from "#/features/room/presentation/ui/CopyRoomCodeButton";
 import { ISLAND_SPRING } from "#/shared/lib/motion";
 
 /**

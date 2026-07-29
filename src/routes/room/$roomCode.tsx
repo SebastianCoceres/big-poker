@@ -1,20 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ConnectionBanner } from "#/features/connection/ui/ConnectionBanner";
-import { useParticipantIdentity } from "#/features/participants/hooks/useParticipantIdentity";
-import { joinRoomFn } from "#/features/participants/interface-adapters/participant.controllers";
-import { JoinForm } from "#/features/participants/ui/JoinForm";
-import { LeaveRoomButton } from "#/features/participants/ui/LeaveRoomButton";
-import { ParticipantBar } from "#/features/participants/ui/ParticipantBar";
+import { ConnectionBanner } from "#/features/connection/presentation/ui/ConnectionBanner";
+import { joinRoomFn } from "#/features/participants/infrastructure/participant.controllers";
+import { useParticipantIdentity } from "#/features/participants/presentation/hooks/useParticipantIdentity";
+import { JoinForm } from "#/features/participants/presentation/ui/JoinForm";
+import { LeaveRoomButton } from "#/features/participants/presentation/ui/LeaveRoomButton";
+import { ParticipantBar } from "#/features/participants/presentation/ui/ParticipantBar";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
-import { useRoomStream } from "#/features/room/hooks/useRoomStream";
-import { RoomControlIsland } from "#/features/room/ui/RoomControlIsland";
-import { RoomEndedView } from "#/features/room/ui/RoomEndedView";
-import { CardBoard } from "#/features/voting/ui/CardBoard";
-import { QuestionPanel } from "#/features/voting/ui/QuestionPanel";
-import { ResultsPanel } from "#/features/voting/ui/ResultsPanel";
-import { WaitingState } from "#/features/voting/ui/WaitingState";
+import { useRoomStream } from "#/features/room/presentation/hooks/useRoomStream";
+import { RoomControlIsland } from "#/features/room/presentation/ui/RoomControlIsland";
+import { RoomEndedView } from "#/features/room/presentation/ui/RoomEndedView";
+import { CardBoard } from "#/features/voting/presentation/ui/CardBoard";
+import { QuestionPanel } from "#/features/voting/presentation/ui/QuestionPanel";
+import { ResultsPanel } from "#/features/voting/presentation/ui/ResultsPanel";
+import { WaitingState } from "#/features/voting/presentation/ui/WaitingState";
 
 export const Route = createFileRoute("/room/$roomCode")({
 	component: RoomPage,
