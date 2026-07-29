@@ -1,12 +1,14 @@
-import type { CardValue } from "./voting";
-
 export type RoundStatus = "waiting" | "voting" | "revealed";
+
+// A vote is an opaque primitive from `room`'s perspective — it doesn't care
+// what it means (a card, a t-shirt size, whatever); that's `voting`'s job.
+export type VoteValue = string | number;
 
 export interface Participant {
 	id: string;
 	name: string;
 	isMaster: boolean;
-	vote: CardValue | null;
+	vote: VoteValue | null;
 	joinedAt: number;
 }
 
@@ -32,7 +34,7 @@ export interface RoomSnapshot {
 		name: string;
 		isMaster: boolean;
 		hasVoted: boolean;
-		vote: CardValue | null;
+		vote: VoteValue | null;
 		connected: boolean;
 	}>;
 	results: {

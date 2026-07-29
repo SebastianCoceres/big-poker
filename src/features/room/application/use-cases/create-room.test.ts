@@ -3,7 +3,7 @@ import {
 	createHarness,
 	mustOk,
 	type RoomHarness,
-} from "../../testing/room-harness";
+} from "#/app/testing/room-harness";
 
 let harness: RoomHarness;
 

@@ -3,6 +3,7 @@ import type {
 	RoomRepository,
 	Send,
 	Unsubscribe,
+	VoteScorer,
 } from "../application/ports";
 import { broadcastRoomSnapshot } from "../application/snapshot-broadcast";
 import type { RoomSnapshot } from "../domain/entities";
@@ -51,7 +52,10 @@ export class InMemoryRoomRealtimeGateway implements RoomRealtimeGateway {
 		ReturnType<typeof setTimeout>
 	>();
 
-	constructor(private readonly rooms: RoomRepository) {
+	constructor(
+		private readonly rooms: RoomRepository,
+		private readonly voteScorer: VoteScorer,
+	) {
 		this.ensureCleanupTimer();
 	}
 
@@ -162,7 +166,7 @@ export class InMemoryRoomRealtimeGateway implements RoomRealtimeGateway {
 	private broadcast(code: string): void {
 		const room = this.rooms.findByCode(code);
 		if (!room) return;
-		broadcastRoomSnapshot(this, room);
+		broadcastRoomSnapshot(this, room, this.voteScorer);
 	}
 
 	private participantLeaveTimerKey(

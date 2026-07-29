@@ -50,7 +50,7 @@ export class CreateRoomUseCase {
 		// just practically) equivalent to querying real connection state.
 		return {
 			ok: true,
-			data: { participantId, snapshot: buildSnapshot(room, new Set()) },
+			data: { participantId, snapshot: buildSnapshot(room, new Set(), null) },
 		};
 	}
 

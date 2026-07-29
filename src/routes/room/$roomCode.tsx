@@ -1,20 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { ConnectionBanner } from "#/features/connection/ui/ConnectionBanner";
+import { useParticipantIdentity } from "#/features/participants/hooks/useParticipantIdentity";
+import { joinRoomFn } from "#/features/participants/interface-adapters/participant.controllers";
+import { JoinForm } from "#/features/participants/ui/JoinForm";
+import { LeaveRoomButton } from "#/features/participants/ui/LeaveRoomButton";
+import { ParticipantBar } from "#/features/participants/ui/ParticipantBar";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
-import { useParticipantIdentity } from "#/features/room/hooks/useParticipantIdentity";
 import { useRoomStream } from "#/features/room/hooks/useRoomStream";
-import { joinRoomFn } from "#/features/room/interface-adapters/room.controllers";
-import { CardBoard } from "#/features/room/ui/CardBoard";
-import { ConnectionBanner } from "#/features/room/ui/ConnectionBanner";
-import { JoinForm } from "#/features/room/ui/JoinForm";
-import { LeaveRoomButton } from "#/features/room/ui/LeaveRoomButton";
-import { ParticipantBar } from "#/features/room/ui/ParticipantBar";
-import { QuestionPanel } from "#/features/room/ui/QuestionPanel";
-import { ResultsPanel } from "#/features/room/ui/ResultsPanel";
 import { RoomControlIsland } from "#/features/room/ui/RoomControlIsland";
 import { RoomEndedView } from "#/features/room/ui/RoomEndedView";
-import { WaitingState } from "#/features/room/ui/WaitingState";
+import { CardBoard } from "#/features/voting/ui/CardBoard";
+import { QuestionPanel } from "#/features/voting/ui/QuestionPanel";
+import { ResultsPanel } from "#/features/voting/ui/ResultsPanel";
+import { WaitingState } from "#/features/voting/ui/WaitingState";
 
 export const Route = createFileRoute("/room/$roomCode")({
 	component: RoomPage,

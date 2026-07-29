@@ -1,5 +1,4 @@
 import type { Room, RoomSnapshot } from "./entities";
-import { type CardValue, computeResults } from "./voting";
 
 // `viewerId` lets each participant always see their OWN vote before reveal
 // (they already know what card they picked — hiding it from themselves only
@@ -10,9 +9,19 @@ import { type CardValue, computeResults } from "./voting";
 // pure projection of (Room, connection state) -> RoomSnapshot with no I/O of
 // its own; the caller (a use case, backed by the RoomRealtimeGateway port) is
 // responsible for resolving which participants are currently connected.
+//
+// `results` is likewise passed in already computed rather than derived here —
+// scoring votes is `voting`'s domain (see the `VoteScorer` port), this
+// function only knows how to assemble a snapshot from whatever result it's
+// given.
 export function buildSnapshot(
 	room: Room,
 	connectedIds: Set<string>,
+	results: {
+		average: number | null;
+		blocked: boolean;
+		voteCount: number;
+	} | null,
 	viewerId?: string,
 ): RoomSnapshot {
 	const participants = [...room.participants.values()].map((p) => ({
@@ -23,15 +32,6 @@ export function buildSnapshot(
 		vote: room.status === "revealed" || p.id === viewerId ? p.vote : null,
 		connected: connectedIds.has(p.id),
 	}));
-
-	const results =
-		room.status === "revealed"
-			? computeResults(
-					[...room.participants.values()]
-						.map((p) => p.vote)
-						.filter((v): v is CardValue => v !== null),
-				)
-			: null;
 
 	return {
 		code: room.code,

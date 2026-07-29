@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { container } from "#/app/container";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
-import { container } from "#/features/room/infrastructure/container";
 
 const HEARTBEAT_INTERVAL_MS = 25_000;
 
