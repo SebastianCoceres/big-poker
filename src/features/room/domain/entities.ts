@@ -1,14 +1,20 @@
 export type RoundStatus = "waiting" | "voting" | "revealed";
 
-// A vote is an opaque primitive from `room`'s perspective — it doesn't care
-// what it means (a card, a t-shirt size, whatever); that's `voting`'s job.
-export type VoteValue = string | number;
-
-export interface Participant {
+// `room`'s own view of a seat in its roster. Conceptually, a RoomMember IS
+// a Participant (features/participants/domain/entities.ts) — Participant is
+// the real entity, basically a user — but `room` owns the `Room` aggregate
+// and never imports from `participants`, so this is declared independently
+// rather than importing/extending it. Structurally identical on purpose.
+//
+// `vote` is an inline opaque primitive for the same reason: `room` doesn't
+// care what a vote means (a card, a t-shirt size, whatever) — that's
+// `voting`'s `VoteValue` (features/voting/domain/entities.ts), which room
+// likewise never imports.
+export interface RoomMember {
 	id: string;
 	name: string;
 	isMaster: boolean;
-	vote: VoteValue | null;
+	vote: string | number | null;
 	joinedAt: number;
 }
 
@@ -20,7 +26,7 @@ export interface Room {
 	question: string | null;
 	status: RoundStatus;
 	roundId: string;
-	participants: Map<string, Participant>;
+	participants: Map<string, RoomMember>;
 }
 
 export interface RoomSnapshot {
@@ -34,7 +40,7 @@ export interface RoomSnapshot {
 		name: string;
 		isMaster: boolean;
 		hasVoted: boolean;
-		vote: VoteValue | null;
+		vote: string | number | null;
 		connected: boolean;
 	}>;
 	results: {

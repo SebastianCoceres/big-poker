@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { CARD_VALUES, type CardValue } from "#/features/voting/domain/voting";
+import { CARD_VALUES, type CardValue } from "#/features/voting/domain/entities";
 import { castVoteFn } from "#/features/voting/infrastructure/voting.controllers";
 import Stack from "#/shared/ui/Stack";
 

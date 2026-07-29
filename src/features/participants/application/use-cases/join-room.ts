@@ -1,3 +1,4 @@
+import type { Participant } from "#/features/participants/domain/entities";
 import { isNameTaken } from "#/features/participants/domain/participant-name";
 import type { JoinedRoom } from "#/features/room/application/dtos";
 import type {
@@ -45,13 +46,14 @@ export class JoinRoomUseCase {
 			// Idempotent: reconnecting/refreshing re-sends join with the same id.
 			existing.name = cleanName;
 		} else {
-			room.participants.set(resolvedId, {
+			const newParticipant: Participant = {
 				id: resolvedId,
 				name: cleanName,
 				isMaster: resolvedId === room.masterId,
 				vote: null,
 				joinedAt: Date.now(),
-			});
+			};
+			room.participants.set(resolvedId, newParticipant);
 		}
 		room.lastActivityAt = Date.now();
 		this.rooms.save(room);

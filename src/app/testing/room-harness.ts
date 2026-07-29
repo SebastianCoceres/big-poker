@@ -11,7 +11,7 @@ import { CastVoteUseCase } from "#/features/voting/application/use-cases/cast-vo
 import { CloseResultUseCase } from "#/features/voting/application/use-cases/close-result";
 import { RevealUseCase } from "#/features/voting/application/use-cases/reveal";
 import { StartRoundUseCase } from "#/features/voting/application/use-cases/start-round";
-import type { CardValue } from "#/features/voting/domain/voting";
+import type { CardValue } from "#/features/voting/domain/entities";
 import { FibonacciVoteScorer } from "#/features/voting/infrastructure/fibonacci-vote-scorer";
 
 /**

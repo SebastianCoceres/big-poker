@@ -35,5 +35,170 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/features/room/domain/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/room/application/**",
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/participants/**",
+											"#/features/voting/**",
+											"#/features/connection/**"
+										],
+										"message": "room/domain no depende de nada — ni de otras capas de room, ni de otra feature."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/features/room/application/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/participants/**",
+											"#/features/voting/**",
+											"#/features/connection/**"
+										],
+										"message": "room/application solo depende de room/domain."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/features/participants/domain/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/participants/application/**",
+											"#/features/participants/infrastructure/**",
+											"#/features/participants/presentation/**",
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/voting/**",
+											"#/features/connection/**"
+										],
+										"message": "participants/domain no depende de nada — ni de otras capas de participants, ni de infrastructure/presentation de room, ni de otra feature."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/features/participants/application/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/participants/infrastructure/**",
+											"#/features/participants/presentation/**",
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/voting/**",
+											"#/features/connection/**"
+										],
+										"message": "participants/application solo depende de participants/domain y de los contratos públicos de room/domain + room/application/ports."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/features/voting/domain/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/voting/application/**",
+											"#/features/voting/infrastructure/**",
+											"#/features/voting/presentation/**",
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/participants/**",
+											"#/features/connection/**"
+										],
+										"message": "voting/domain no depende de nada — ni de otras capas de voting, ni de infrastructure/presentation de room, ni de otra feature."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/features/voting/application/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#/features/voting/infrastructure/**",
+											"#/features/voting/presentation/**",
+											"#/features/room/infrastructure/**",
+											"#/features/room/presentation/**",
+											"#/features/participants/**",
+											"#/features/connection/**"
+										],
+										"message": "voting/application solo depende de voting/domain y de los contratos públicos de room/domain + room/application/ports."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		}
+	]
 }

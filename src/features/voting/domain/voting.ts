@@ -1,15 +1,10 @@
-export const FIBONACCI_SCALE = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89] as const;
-export type NumericCard = (typeof FIBONACCI_SCALE)[number];
-
-export const SPECIAL_CARDS = ["?", "☕"] as const;
-export type SpecialCard = (typeof SPECIAL_CARDS)[number];
-
-export type CardValue = NumericCard | SpecialCard;
-
-export const CARD_VALUES: readonly CardValue[] = [
-	...FIBONACCI_SCALE,
-	...SPECIAL_CARDS,
-];
+import {
+	type CardValue,
+	FIBONACCI_SCALE,
+	type NumericCard,
+	type RoundResults,
+	SPECIAL_CARDS,
+} from "./entities";
 
 export function isCardValue(value: unknown): value is CardValue {
 	if (typeof value === "number") {
@@ -26,12 +21,6 @@ export function roundUpToFibonacci(value: number): NumericCard {
 	if (value <= FIBONACCI_SCALE[0]) return FIBONACCI_SCALE[0];
 	if (value > max) return max;
 	return FIBONACCI_SCALE.find((f) => f >= value) ?? max;
-}
-
-export interface RoundResults {
-	average: NumericCard | null;
-	blocked: boolean;
-	voteCount: number;
 }
 
 export function computeResults(votes: CardValue[]): RoundResults {

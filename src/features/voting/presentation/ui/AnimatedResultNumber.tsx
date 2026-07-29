@@ -1,6 +1,6 @@
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
-import { FIBONACCI_SCALE } from "#/features/voting/domain/voting";
+import { FIBONACCI_SCALE } from "#/features/voting/domain/entities";
 
 const CYCLE_DURATION_MS = 700;
 const CYCLE_INTERVAL_MS = 110;

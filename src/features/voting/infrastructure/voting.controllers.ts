@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { container } from "#/app/container";
-import type { CardValue } from "../domain/voting";
+import type { CardValue } from "../domain/entities";
 
 function requireString(value: unknown, field: string): string {
 	if (typeof value !== "string") throw new Error(`${field} must be a string`);

@@ -1,5 +1,6 @@
 import type { VoteScorer } from "#/features/room/application/ports";
-import { type CardValue, computeResults } from "../domain/voting";
+import type { CardValue } from "../domain/entities";
+import { computeResults } from "../domain/voting";
 
 /**
  * The only concrete `VoteScorer` — wired in by the composition root

@@ -9,7 +9,8 @@ import {
 } from "#/features/room/application/snapshot-broadcast";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import type { Result } from "#/features/room/domain/result";
-import { type CardValue, isCardValue } from "../../domain/voting";
+import type { CardValue } from "../../domain/entities";
+import { isCardValue } from "../../domain/voting";
 
 export class CastVoteUseCase {
 	constructor(
