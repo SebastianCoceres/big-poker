@@ -48,6 +48,17 @@ describe("CastVoteUseCase", () => {
 		});
 	});
 
+	it("fails when the participant isn't seated in the room", () => {
+		const { code, masterId } = createTestRoom(harness);
+		const started = mustOk(harness.startRound(code, masterId, "q"));
+		expect(
+			harness.castVote(code, "not-a-real-participant", started.roundId, 5),
+		).toEqual({
+			ok: false,
+			error: "ROOM_NOT_FOUND",
+		});
+	});
+
 	it("records the vote and marks hasVoted for that participant only", () => {
 		const { code, masterId } = createTestRoom(harness);
 		const { participantId: fedeId } = mustOk(harness.joinRoom(code, "Fede"));

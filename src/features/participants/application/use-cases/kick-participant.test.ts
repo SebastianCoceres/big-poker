@@ -38,6 +38,14 @@ describe("KickParticipantUseCase", () => {
 		expect(after.participants.some((p) => p.id === fedeId)).toBe(false);
 	});
 
+	it("is idempotent when the target is already gone", () => {
+		const { code, masterId } = createTestRoom(harness);
+		const { participantId: fedeId } = mustOk(harness.joinRoom(code, "Fede"));
+		mustOk(harness.kickParticipant(code, masterId, fedeId));
+		// Already gone — still succeeds, no-op.
+		expect(harness.kickParticipant(code, masterId, fedeId).ok).toBe(true);
+	});
+
 	// This is the ordering guarantee the client's own-seat-missing rejoin
 	// effect depends on: the kicked participant must receive "kicked" and
 	// never another "snapshot" without themselves in it, or their own tab
