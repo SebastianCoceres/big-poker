@@ -6,6 +6,7 @@ import {
 	writeDisplayName,
 	writeParticipantIdentity,
 } from "#/features/participants/presentation/hooks/useParticipantIdentity";
+import { JoinByQrButton } from "#/features/participants/presentation/ui/JoinByQrButton";
 import type { RoomErrorCode } from "#/features/room/domain/errors";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
 import { createRoomFn } from "#/features/room/infrastructure/room.controllers";
@@ -98,11 +99,10 @@ function Home() {
 		}
 	}
 
-	async function handleJoin(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault();
+	async function submitJoin(rawCode: string) {
 		setJoinError(null);
 		setJoining(true);
-		const code = normalizeRoomCode(joinCode);
+		const code = normalizeRoomCode(rawCode);
 		try {
 			const result = await joinRoomFn({
 				data: { code, name: displayName },
@@ -122,6 +122,16 @@ function Home() {
 		} finally {
 			setJoining(false);
 		}
+	}
+
+	function handleJoin(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		submitJoin(joinCode);
+	}
+
+	function handleScannedCode(code: string) {
+		setJoinCode(code);
+		submitJoin(code);
 	}
 
 	// Avoids flashing the name step for a returning visitor before the
@@ -196,6 +206,8 @@ function Home() {
 							Pedile el código al master de la sala.
 						</p>
 					</div>
+					<JoinByQrButton onScanned={handleScannedCode} />
+					<p className="text-muted text-center text-sm">o ingresá el código</p>
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: Field renders a real <input> nested right here — Biome just can't see through the wrapper component. */}
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Código de sala
