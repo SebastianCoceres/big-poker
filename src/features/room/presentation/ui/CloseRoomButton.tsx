@@ -1,4 +1,5 @@
 import { closeRoomFn } from "#/features/room/infrastructure/room.controllers";
+import { buttonVariants } from "#/shared/ui/Button";
 import { ConfirmButton } from "#/shared/ui/ConfirmButton";
 
 export function CloseRoomButton({
@@ -17,7 +18,7 @@ export function CloseRoomButton({
 			label="Cerrar sala"
 			confirmLabel="¿Seguro? Sí, cerrar"
 			onConfirm={handleClose}
-			className="btn btn-danger"
+			className={buttonVariants({ variant: "danger" })}
 		/>
 	);
 }

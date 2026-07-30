@@ -1,37 +1,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { colorForId, initials } from "#/features/participants/presentation/lib/avatar";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { ISLAND_SPRING } from "#/shared/lib/motion";
-
-const AVATAR_COLORS = [
-	"#2563eb",
-	"#7c3aed",
-	"#0ea5e9",
-	"#db2777",
-	"#f59e0b",
-	"#059669",
-	"#e11d48",
-	"#0891b2",
-];
+import { Kicker } from "#/shared/ui/Kicker";
+import { Pill } from "#/shared/ui/Pill";
 
 // Beyond this many, the rest collapse into a "+N" chip (see VISIBLE_LIMIT
 // below) — a horizontal bar of 15 avatars stops being scannable.
 const VISIBLE_LIMIT = 5;
-
-function colorForId(id: string): string {
-	let hash = 0;
-	for (let i = 0; i < id.length; i++) {
-		hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-	}
-	return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
-
-function initials(name: string): string {
-	const parts = name.trim().split(/\s+/).filter(Boolean);
-	if (parts.length === 0) return "?";
-	if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-	return (parts[0][0] + parts[1][0]).toUpperCase();
-}
 
 type Participant = RoomSnapshot["participants"][number];
 
@@ -115,7 +92,7 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 							transition={ISLAND_SPRING}
 							className="max-h-64 overflow-y-auto px-4 pt-3"
 						>
-							<p className="kicker mb-2">Más participantes</p>
+							<Kicker className="mb-2">Más participantes</Kicker>
 							<ul className="flex flex-col gap-2 pb-1">
 								{overflow.map((p) => (
 									<li
@@ -128,12 +105,12 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 										</span>
 										{snapshot.status === "voting" &&
 											(p.hasVoted ? (
-												<span className="pill">✓</span>
+												<Pill>✓</Pill>
 											) : (
 												<span className="text-muted text-xs">esperando</span>
 											))}
 										{snapshot.status === "revealed" && (
-											<span className="pill">{p.vote ?? "–"}</span>
+											<Pill>{p.vote ?? "–"}</Pill>
 										)}
 									</li>
 								))}

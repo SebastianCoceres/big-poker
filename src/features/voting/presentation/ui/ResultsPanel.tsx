@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { closeResultFn } from "#/features/voting/infrastructure/voting.controllers";
 import { AnimatedResultNumber } from "#/features/voting/presentation/ui/AnimatedResultNumber";
+import { Button } from "#/shared/ui/Button";
+import { Kicker } from "#/shared/ui/Kicker";
 
 export function ResultsPanel({
 	code,
@@ -28,7 +30,7 @@ export function ResultsPanel({
 
 	return (
 		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-			<p className="kicker">Resultado</p>
+			<Kicker>Resultado</Kicker>
 			<h2 className="text-muted max-w-lg text-base font-semibold">
 				{snapshot.question}
 			</h2>
@@ -55,14 +57,14 @@ export function ResultsPanel({
 				<p className="text-muted text-sm">Nadie votó todavía en esta ronda.</p>
 			)}
 			{isMaster && (
-				<button
-					type="button"
-					className="btn btn-secondary mt-2"
+				<Button
+					variant="secondary"
+					className="mt-2"
 					onClick={handleClose}
 					disabled={closing}
 				>
 					Cerrar resultado
-				</button>
+				</Button>
 			)}
 		</div>
 	);

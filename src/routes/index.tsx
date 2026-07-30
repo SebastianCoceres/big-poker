@@ -9,6 +9,9 @@ import {
 import type { RoomErrorCode } from "#/features/room/domain/errors";
 import { normalizeRoomCode } from "#/features/room/domain/room-code";
 import { createRoomFn } from "#/features/room/infrastructure/room.controllers";
+import { Button } from "#/shared/ui/Button";
+import { Field } from "#/shared/ui/Field";
+import { Kicker } from "#/shared/ui/Kicker";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -129,7 +132,7 @@ function Home() {
 		<main className="page-wrap flex h-dvh flex-col items-center justify-center gap-6 px-4">
 			<div className="home-aurora" aria-hidden />
 			<div className="rise-in max-w-md text-center">
-				<p className="kicker mb-2">BigPoker</p>
+				<Kicker className="mb-2">BigPoker</Kicker>
 				<h1 className="heading-lg text-3xl sm:text-4xl">
 					Estimá en equipo, sin fricción.
 				</h1>
@@ -145,10 +148,10 @@ function Home() {
 					onSubmit={handleConfirmName}
 					className="rise-in flex w-full max-w-md flex-col gap-4"
 				>
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Field renders a real <input> nested right here — Biome just can't see through the wrapper component. */}
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Tu nombre
-						<input
-							className="field"
+						<Field
 							value={nameInput}
 							onChange={(e) => setNameInput(e.target.value)}
 							maxLength={30}
@@ -156,9 +159,7 @@ function Home() {
 							placeholder="Ej: Sebastián"
 						/>
 					</label>
-					<button type="submit" className="btn">
-						Continuar
-					</button>
+					<Button type="submit">Continuar</Button>
 				</form>
 			)}
 
@@ -168,21 +169,12 @@ function Home() {
 						Hola, <strong className="text-ink">{displayName}</strong>.
 					</p>
 					{createError && <p className="text-danger text-sm">{createError}</p>}
-					<button
-						type="button"
-						onClick={handleCreate}
-						className="btn"
-						disabled={creating}
-					>
+					<Button onClick={handleCreate} disabled={creating}>
 						{creating ? "Creando..." : "Crear sala"}
-					</button>
-					<button
-						type="button"
-						onClick={() => setStep("join")}
-						className="btn btn-secondary"
-					>
+					</Button>
+					<Button variant="secondary" onClick={() => setStep("join")}>
 						Unirse a sala
-					</button>
+					</Button>
 					<button
 						type="button"
 						onClick={handleChangeName}
@@ -204,10 +196,11 @@ function Home() {
 							Pedile el código al master de la sala.
 						</p>
 					</div>
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Field renders a real <input> nested right here — Biome just can't see through the wrapper component. */}
 					<label className="flex flex-col gap-1 text-sm font-semibold">
 						Código de sala
-						<input
-							className="field uppercase tracking-[0.2em]"
+						<Field
+							className="uppercase tracking-[0.2em]"
 							value={joinCode}
 							onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
 							maxLength={6}
@@ -216,13 +209,9 @@ function Home() {
 						/>
 					</label>
 					{joinError && <p className="text-danger text-sm">{joinError}</p>}
-					<button
-						type="submit"
-						className="btn btn-secondary"
-						disabled={joining}
-					>
+					<Button type="submit" variant="secondary" disabled={joining}>
 						{joining ? "Uniéndote..." : "Unirse a sala"}
-					</button>
+					</Button>
 					<button
 						type="button"
 						onClick={() => setStep("choose")}

@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { leaveRoomFn } from "#/features/participants/infrastructure/participant.controllers";
+import { buttonVariants } from "#/shared/ui/Button";
 import { ConfirmButton } from "#/shared/ui/ConfirmButton";
 
 export function LeaveRoomButton({
@@ -25,7 +26,7 @@ export function LeaveRoomButton({
 				label="Salir de la sala"
 				confirmLabel="¿Seguro? Sí, salir"
 				onConfirm={handleLeave}
-				className="btn btn-secondary"
+				className={buttonVariants({ variant: "secondary" })}
 			/>
 		</div>
 	);

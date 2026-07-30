@@ -10,8 +10,8 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import { cleanText } from "#/features/room/application/text";
-import { joinParticipant } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
+import { joinParticipant } from "#/features/room/domain/room-operations";
 
 export class JoinRoomUseCase {
 	constructor(

@@ -1,7 +1,9 @@
+import { Kicker } from "#/shared/ui/Kicker";
+
 export function WaitingState() {
 	return (
 		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center">
-			<p className="kicker">Esperando</p>
+			<Kicker>Esperando</Kicker>
 			<h2 className="heading-sm text-lg">
 				El master todavía no inició una ronda
 			</h2>

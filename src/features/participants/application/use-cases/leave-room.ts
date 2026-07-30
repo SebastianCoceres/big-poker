@@ -8,8 +8,8 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { leaveRoom } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
+import { leaveRoom } from "#/features/room/domain/room-operations";
 
 export class LeaveRoomUseCase {
 	constructor(

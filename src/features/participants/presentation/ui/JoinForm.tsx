@@ -6,6 +6,9 @@ import {
 	writeDisplayName,
 } from "#/features/participants/presentation/hooks/useParticipantIdentity";
 import type { RoomErrorCode } from "#/features/room/domain/errors";
+import { Button } from "#/shared/ui/Button";
+import { Field } from "#/shared/ui/Field";
+import { Kicker } from "#/shared/ui/Kicker";
 
 function errorMessage(error: RoomErrorCode): string {
 	switch (error) {
@@ -78,13 +81,13 @@ export function JoinForm({
 			className="rise-in mx-auto flex w-full max-w-md flex-col gap-4"
 		>
 			<div>
-				<p className="kicker mb-1">Sala {code}</p>
+				<Kicker className="mb-1">Sala {code}</Kicker>
 				<h1 className="heading-lg text-2xl">Unirte a la sala</h1>
 			</div>
+			{/* biome-ignore lint/a11y/noLabelWithoutControl: Field renders a real <input> nested right here — Biome just can't see through the wrapper component. */}
 			<label className="flex flex-col gap-1 text-sm font-semibold">
 				Tu nombre
-				<input
-					className="field"
+				<Field
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 					maxLength={30}
@@ -93,9 +96,9 @@ export function JoinForm({
 				/>
 			</label>
 			{error && <p className="text-danger text-sm">{error}</p>}
-			<button type="submit" className="btn" disabled={submitting}>
+			<Button type="submit" disabled={submitting}>
 				{submitting ? "Uniéndote..." : "Unirse"}
-			</button>
+			</Button>
 		</form>
 	);
 }

@@ -1,3 +1,7 @@
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "#/shared/ui/Button";
+import { Kicker } from "#/shared/ui/Kicker";
+
 type EndedState = "room-gone" | "closed" | "kicked";
 
 const COPY: Record<
@@ -34,10 +38,10 @@ export function RoomEndedView({ state }: { state: EndedState }) {
 
 	return (
 		<main className="page-wrap flex h-dvh flex-col items-center justify-center gap-3 px-4 text-center">
-			<p className="kicker">{copy.kicker}</p>
+			<Kicker>{copy.kicker}</Kicker>
 			<h1 className="heading-lg text-2xl sm:text-3xl">{copy.heading}</h1>
 			<p className="text-muted text-sm">{copy.body}</p>
-			<a href="/" className="btn mt-3">
+			<a href="/" className={cn(buttonVariants(), "mt-3")}>
 				{copy.cta}
 			</a>
 		</main>

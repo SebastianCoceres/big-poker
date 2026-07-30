@@ -8,8 +8,8 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
-import { castVote } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
+import { castVote } from "#/features/room/domain/room-operations";
 import type { CardValue } from "../../domain/entities";
 import { isCardValue } from "../../domain/voting";
 

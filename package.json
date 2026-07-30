@@ -17,15 +17,21 @@
 	},
 	"dependencies": {
 		"@number-flow/react": "^0.6.2",
+		"@radix-ui/react-tabs": "^1.1.21",
+		"@tabler/icons-react": "^3.46.0",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/react-devtools": "latest",
 		"@tanstack/react-router": "latest",
 		"@tanstack/react-router-devtools": "latest",
 		"@tanstack/react-start": "latest",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
 		"motion": "^12.42.2",
 		"nitro": "npm:nitro-nightly@3.0.1-20260722-224121-77b77ffb",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
+		"react-qr-code": "^2.2.0",
+		"tailwind-merge": "^3.6.0",
 		"tailwindcss": "^4.1.18"
 	},
 	"devDependencies": {
@@ -44,11 +50,5 @@
 		"typescript": "^6.0.2",
 		"vite": "^8.0.0",
 		"vitest": "^4.1.10"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild",
-			"lightningcss"
-		]
 	}
 }
