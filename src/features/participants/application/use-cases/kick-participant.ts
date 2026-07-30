@@ -8,6 +8,7 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
+import { kickParticipant } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
 
 export class KickParticipantUseCase {
@@ -24,15 +25,11 @@ export class KickParticipantUseCase {
 	): Result<RoomSnapshot> {
 		const room = this.rooms.findByCode(code);
 		if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
-		if (room.masterId !== participantId) {
-			return { ok: false, error: "NOT_MASTER" };
-		}
-		if (targetId === participantId) {
-			return { ok: false, error: "CANNOT_KICK_SELF" };
-		}
 
-		if (room.participants.delete(targetId)) {
-			room.lastActivityAt = Date.now();
+		const result = kickParticipant(room, participantId, targetId);
+		if (!result.ok) return result;
+
+		if (result.data) {
 			this.rooms.save(room);
 
 			// Tell the kicked participant directly BEFORE the general broadcast

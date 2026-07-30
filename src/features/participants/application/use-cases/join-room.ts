@@ -1,4 +1,3 @@
-import type { Participant } from "#/features/participants/domain/entities";
 import { isNameTaken } from "#/features/participants/domain/participant-name";
 import type { JoinedRoom } from "#/features/room/application/dtos";
 import type {
@@ -11,6 +10,7 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import { cleanText } from "#/features/room/application/text";
+import { joinParticipant } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
 
 export class JoinRoomUseCase {
@@ -41,21 +41,7 @@ export class JoinRoomUseCase {
 			return { ok: false, error: "NAME_TAKEN" };
 		}
 
-		const existing = room.participants.get(resolvedId);
-		if (existing) {
-			// Idempotent: reconnecting/refreshing re-sends join with the same id.
-			existing.name = cleanName;
-		} else {
-			const newParticipant: Participant = {
-				id: resolvedId,
-				name: cleanName,
-				isMaster: resolvedId === room.masterId,
-				vote: null,
-				joinedAt: Date.now(),
-			};
-			room.participants.set(resolvedId, newParticipant);
-		}
-		room.lastActivityAt = Date.now();
+		joinParticipant(room, resolvedId, cleanName);
 		this.rooms.save(room);
 		broadcastRoomSnapshot(this.realtime, room, this.voteScorer);
 		return {

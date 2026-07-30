@@ -8,6 +8,7 @@ import {
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
+import { leaveRoom } from "#/features/room/domain/room-operations";
 import type { Result } from "#/features/room/domain/result";
 
 export class LeaveRoomUseCase {
@@ -20,16 +21,11 @@ export class LeaveRoomUseCase {
 	execute(code: string, participantId: string): Result<RoomSnapshot> {
 		const room = this.rooms.findByCode(code);
 		if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
-		// The master has no seat to hand off to — closing the room is the only
-		// way out for them, mirrors reveal()/closeResult() requiring a role.
-		if (room.masterId === participantId) {
-			return { ok: false, error: "MASTER_CANNOT_LEAVE" };
-		}
 
-		// Idempotent no-op if already gone (double-click), mirrors
-		// reveal/closeResult.
-		if (room.participants.delete(participantId)) {
-			room.lastActivityAt = Date.now();
+		const result = leaveRoom(room, participantId);
+		if (!result.ok) return result;
+
+		if (result.data) {
 			this.rooms.save(room);
 
 			// broadcastRoomSnapshot() below only iterates room.participants — the
