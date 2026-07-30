@@ -1,187 +1,72 @@
-Welcome to your new TanStack Start app!
+# BigPoker
 
-# Getting Started
+Real-time Planning Poker for teams — no accounts, no installs. Pick a name, create or join a room by code, and estimate together.
 
-To run this application:
+## Features
+
+- Create a room and share its 6-character code, or join an existing one.
+- Master starts a round with a question; everyone votes with a Fibonacci card.
+- Auto-reveal once every seat has voted, or the master reveals manually.
+- Live sync across all participants via Server-Sent Events (SSE) — no polling.
+- Master can kick participants; anyone (except the master) can leave.
+- No login: identity is a name + a per-room id kept in `localStorage`.
+
+## Stack
+
+- [TanStack Start](https://tanstack.com/start) + TanStack Router (file-based routing), React 19, Vite 8.
+- Tailwind CSS v4 (`@tailwindcss/vite`).
+- [Biome](https://biomejs.dev) for linting/formatting.
+- [Vitest](https://vitest.dev) for tests.
+- Package manager: pnpm.
+
+No database — rooms are held in memory on the server for the process's lifetime (`InMemoryRoomRepository`). No auth, no external services.
+
+## Getting started
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev       # http://localhost:3000
 ```
 
-# Building For Production
+## Scripts
 
-To build this application for production:
+| Command        | Description                                       |
+| -------------- | -------------------------------------------------- |
+| `pnpm dev`     | Start the dev server on port 3000                  |
+| `pnpm build`   | Production build (`dist/client` + `dist/server`)   |
+| `pnpm preview` | Preview the production build                       |
+| `pnpm test`    | Run the test suite (Vitest)                        |
+| `pnpm lint`    | Lint with Biome                                    |
+| `pnpm format`  | Format and write with Biome                        |
+| `pnpm check`   | Lint + format + import sort, write                 |
+
+## Project structure
+
+Feature-based (Screaming Architecture): each feature owns its own `domain` / `application` / `infrastructure` / `presentation` layers.
+
+```
+src/
+  app/            composition root — wires repositories/gateways into use-cases
+  features/
+    room/         the core aggregate: room lifecycle, state machine, invariants
+    participants/ joining, leaving, kicking
+    voting/       casting votes, starting rounds, revealing/closing results
+    connection/   client-side connection status UI
+  routes/         TanStack Router file-based routes (incl. the SSE endpoint)
+  server/         server entry
+  shared/         cross-feature UI primitives and utilities
+```
+
+Each feature's `domain` layer holds types and pure business rules; `application` holds use-cases (one class per action, DI'd with ports); `infrastructure` implements those ports (in-memory repository, SSE gateway, server functions); `presentation` holds routes/components/hooks.
+
+## Testing
 
 ```bash
-pnpm build
+pnpm test
 ```
 
-## Styling
+Use-case tests share one harness (`src/app/testing/room-harness.ts`) that wires an in-memory repository and gateway per test, so each test file runs isolated from the others.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## Deployment
 
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+Not configured — `pnpm build` produces a Node-targetable server bundle, but no hosting adapter has been chosen yet.
