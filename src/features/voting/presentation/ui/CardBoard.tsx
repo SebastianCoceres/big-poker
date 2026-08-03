@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import bigtechLogo from "#/assets/bigtechlogo.png";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { CARD_VALUES, type CardValue } from "#/features/voting/domain/entities";
 import { castVoteFn } from "#/features/voting/infrastructure/voting.controllers";
@@ -16,8 +17,30 @@ const STACK_ORDER: CardValue[] = [...CARD_VALUES].reverse();
 
 function CardFace({ value }: { value: CardValue }) {
 	return (
-		<div className="playing-card text-ink flex h-full w-full select-none items-center justify-center border-2 p-0 text-3xl font-bold">
-			{value}
+		<div className="playing-card text-ink isolate relative flex h-full w-full select-none flex-col items-center justify-center overflow-hidden">
+			<div
+				aria-hidden
+				className="card-watermark pointer-events-none absolute"
+				style={{
+					inset: "-50%",
+					transform: "rotate(-18deg)",
+					backgroundImage: `url(${bigtechLogo})`,
+					backgroundRepeat: "repeat",
+					backgroundSize: "90px auto",
+					opacity: 0.4,
+				}}
+			/>
+			<span className="absolute top-2 left-2 flex flex-col items-start gap-1">
+				<span className="text-base leading-none font-bold">{value}</span>
+				<span className="bg-blue h-2 w-2 rounded-xs" />
+			</span>
+			<span className="absolute right-2 bottom-2 flex rotate-180 flex-col items-start gap-1">
+				<span className="text-base leading-none font-bold">{value}</span>
+				<span className="bg-blue h-2 w-2 rounded-xs" />
+			</span>
+			<span className="border-blue bg-white text-slate-900 relative flex h-20 w-20 items-center justify-center rounded-full border-2 text-3xl font-bold">
+				{value}
+			</span>
 		</div>
 	);
 }
@@ -85,15 +108,11 @@ export function CardBoard({
 		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-4">
 			<div className="w-full text-center">
 				<h2 className="heading-sm">{snapshot.question}</h2>
-				<p className="text-muted mt-1 text-sm">
-					{myVote !== null ? (
-						<>
-							Tu voto: <strong className="text-ink">{myVote}</strong>
-						</>
-					) : (
-						"Arrastrá para ver las cartas, tocá la de arriba para votar."
-					)}
-				</p>
+				{myVote !== null && (
+					<p className="text-muted mt-1 text-sm">
+						Tu voto: <strong className="text-ink">{myVote}</strong>
+					</p>
+				)}
 			</div>
 			{sendState === "error" && (
 				<p className="text-danger flex items-center gap-2 text-sm">

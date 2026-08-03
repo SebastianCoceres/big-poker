@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-03T00:00:00Z",
+  "title": "Design System: BigPoker",
+  "extensions": {
+    "colorMeta": {
+      "poker-blue": { "role": "primary", "displayName": "Poker Blue", "canonical": "#2563eb", "tonalRamp": ["#0a1a4d", "#132d80", "#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#dbeafe"] },
+      "aurora-violet": { "role": "tertiary", "displayName": "Aurora Violet", "canonical": "#7c3aed", "tonalRamp": ["#2e1065", "#4c1d95", "#6d28d9", "#7c3aed", "#a78bfa", "#c4b5fd", "#ddd6fe", "#f3e8ff"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#0f172a", "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#64748b", "#94a3b8", "#cbd5e1", "#f1f5f9"] },
+      "foam": { "role": "neutral", "displayName": "Foam", "canonical": "#f5f7fd", "tonalRamp": ["#0e1730", "#1a2744", "#2c3b5c", "#5c6a86", "#9aa6c2", "#c7cfe3", "#e6eaf6", "#f5f7fd"] },
+      "canvas": { "role": "neutral", "displayName": "Canvas", "canonical": "#eef2fb", "tonalRamp": ["#0a0f1f", "#141e38", "#232f55", "#4a5480", "#8590b3", "#c1c9e2", "#e0e5f4", "#eef2fb"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Sora)", "purpose": "The revealed round average — the single expressive typographic moment per screen." },
+      "kicker": { "displayName": "Kicker", "purpose": "Eyebrow label above a value or heading; always via the Kicker component." }
+    },
+    "shadows": [
+      { "name": "island", "value": "0 25px 50px -12px rgba(15, 23, 42, 0.2)", "purpose": "The only shadow role in the system — reserved for the two floating island controls (RoomControlIsland, ParticipantBar)." }
+    ],
+    "motion": [
+      { "name": "island-spring", "value": "spring(stiffness: 420, damping: 34, mass: 0.8)", "purpose": "Every join/leave/expand/collapse on a floating island control — one spring signature app-wide, defined in shared/lib/motion.ts as ISLAND_SPRING." },
+      { "name": "rise-in", "value": "700ms cubic-bezier(0.16, 1, 0.3, 1), opacity 0->1, translateY(12px)->0", "purpose": "Section entrance for content-flow panels (question, results, waiting state)." }
+    ],
+    "breakpoints": [
+      { "name": "page-cap", "value": "430px" },
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The app's one button primitive, primary variant.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Crear sala</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 9999px; border: 1px solid transparent; padding: 12px 16px; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer; transition: transform 0.15s, filter 0.15s; } .ds-btn-primary { background: #2563eb; color: #ffffff; } .ds-btn-primary:hover { transform: translateY(-2px); filter: brightness(0.9); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outline variant of the same button primitive.",
+      "html": "<button class=\"ds-btn ds-btn-secondary\">Unirse a sala</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: #1d4ed8; border: 1px solid rgba(37, 99, 235, 0.55); }"
+    },
+    {
+      "name": "Pill",
+      "kind": "chip",
+      "refersTo": "pill",
+      "description": "Compact status/value chip (a cast vote, a checkmark).",
+      "html": "<span class=\"ds-pill\">8</span>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; border: 1px solid #2563eb; background: #ffffff; color: #475569; padding: 6px 10px; font-size: 12px; font-weight: 700; }"
+    },
+    {
+      "name": "Kicker",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The one eyebrow-label component in the system.",
+      "html": "<p class=\"ds-kicker\">Código de sala</p>",
+      "css": ".ds-kicker { color: #2563eb; font-size: 0.69rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Playing Card",
+      "kind": "card",
+      "refersTo": "playing-card",
+      "description": "The signature physical-object card: corner pips, center circle badge, printed watermark texture.",
+      "html": "<div class=\"ds-card\"><span class=\"ds-card-corner ds-card-corner-tl\"><span class=\"ds-card-corner-value\">8</span><span class=\"ds-card-corner-dot\"></span></span><span class=\"ds-card-corner ds-card-corner-br\"><span class=\"ds-card-corner-value\">8</span><span class=\"ds-card-corner-dot\"></span></span><span class=\"ds-card-badge\">8</span></div>",
+      "css": ".ds-card { position: relative; isolation: isolate; overflow: hidden; width: 160px; height: 224px; border-radius: 16px; border: 2px solid #0f172a; background: #f5f7fd; color: #0f172a; display: flex; align-items: center; justify-content: center; } .ds-card-corner { position: absolute; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; } .ds-card-corner-tl { top: 8px; left: 8px; } .ds-card-corner-br { bottom: 8px; right: 8px; transform: rotate(180deg); } .ds-card-corner-value { font-size: 16px; font-weight: 700; line-height: 1; } .ds-card-corner-dot { width: 8px; height: 8px; border-radius: 2px; background: #2563eb; } .ds-card-badge { width: 80px; height: 80px; border-radius: 9999px; border: 2px solid #2563eb; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; }"
+    },
+    {
+      "name": "Island Trigger",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The top floating glass control (RoomControlIsland) — frosted, elevated, opens the room-management modal.",
+      "html": "<button class=\"ds-island-trigger\"><span class=\"ds-island-text\"><span class=\"ds-kicker\">Código de sala</span><span class=\"ds-island-code\">JVWTWE</span></span><svg class=\"ds-island-chevron\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-island-trigger { display: flex; align-items: center; gap: 12px; width: 100%; border-radius: 12px; border: 1px solid rgba(15, 23, 42, 0.15); background: rgba(250, 251, 255, 0.85); box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.2); backdrop-filter: blur(24px); padding: 10px 16px; text-align: left; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; } .ds-island-trigger:hover { transform: translateY(-2px); } .ds-island-trigger:active { transform: scale(0.98); } .ds-island-text { flex: 1; } .ds-island-code { display: block; font-size: 18px; font-weight: 700; letter-spacing: 0.2em; color: #0f172a; } .ds-island-chevron { width: 16px; height: 16px; flex-shrink: 0; color: #475569; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Text input / textarea shared style.",
+      "html": "<input class=\"ds-field\" placeholder=\"Tu nombre\" />",
+      "css": ".ds-field { width: 100%; border-radius: 0.85rem; border: 1px solid #0f172a; background: #ffffff; color: #0f172a; padding: 10px 14px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; } .ds-field:focus { border-color: #1d4ed8; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Frosted Card Table",
+    "overview": "BigPoker replaces a physical Planning Poker deck with a screen everyone in the same room glances at together. The system reads as a table lit from underneath: soft, blurred aurora light (blue and violet radial gradients) washes the whole page, and on top of it sit two kinds of objects. The first is paper — the playing cards, form fields, and buttons are opaque, flat, almost printed, because they're standing in for physical objects a hand would pick up. The second is glass — the two floating island controls (the room-code trigger at the top, the participant bar at the bottom) are true frosted glass: translucent, blurred, floating above the content in a fixed position, borrowing Apple's Dynamic Island language. Nothing else in the system gets that glass treatment; it's reserved for controls that float independent of the document's scroll.",
+    "keyCharacteristics": [
+      "Flat, opaque \"paper\" for anything a user directly manipulates (cards, buttons, fields).",
+      "Translucent \"glass\" strictly for the two floating island overlays — never blended into content-flow surfaces.",
+      "One accent color (blue) carries every interactive/semantic signal; violet is atmosphere only.",
+      "One expressive font (Sora) reserved for exactly one moment: the revealed number.",
+      "Physical-card literalism: the playing card face deliberately mimics a real Planning Poker card."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Blue is the only color that means \"interactive\" or \"current.\" Violet never appears on anything the user can click or that carries state.", "section": "colors" },
+      { "name": "The Glass-Is-Local Rule", "body": "Every color token in styles.css is solid hex, never rgba(). Translucency for a specific surface is applied with Tailwind's /opacity modifier directly on that component's className, never by editing the shared token.", "section": "colors" },
+      { "name": "The One Display Moment Rule", "body": "Sora appears exactly once per screen, on the revealed number, and nowhere else.", "section": "typography" },
+      { "name": "The Island Exception Rule", "body": "Shadow and backdrop-blur are reserved for the two fixed/floating island controls. A card, button, or field sitting in normal document flow never gets a shadow.", "section": "elevation" },
+      { "name": "The Full-Pill Default Rule", "body": "Any new interactive control defaults to rounded-full unless it has a documented reason not to.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep every token in styles.css's @theme block solid hex — no rgba()/alpha at the token level.",
+      "Do apply translucency locally with Tailwind's /opacity modifier on the specific component that needs glass.",
+      "Do reach for @tabler/icons-react for any icon; match the h-4 w-4 sizing already used across the app.",
+      "Do route every eyebrow/label through Kicker, never a hand-styled uppercase <p>.",
+      "Do default new interactive controls to rounded-full unless documented otherwise.",
+      "Do reuse ISLAND_SPRING for any new floating/overlay motion."
+    ],
+    "donts": [
+      "Don't add a shadow or backdrop-blur to a normal-flow surface — elevation is reserved for the two fixed island controls.",
+      "Don't introduce a second hue as an interactive/semantic signal — blue is the only accent.",
+      "Don't use Sora anywhere but the revealed-average number.",
+      "Don't make the playing card's own background translucent — it sits in an overlapping Stack and needs to stay opaque."
+    ]
+  }
+}

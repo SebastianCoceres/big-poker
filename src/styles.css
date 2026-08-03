@@ -13,18 +13,18 @@
 	--color-violet: #7c3aed;
 	--color-sand: #e6ecfb;
 	--color-foam: #f5f7fd;
-	--color-surface: rgba(255, 255, 255, 0.74);
-	--color-surface-strong: rgba(255, 255, 255, 0.9);
-	--color-line: rgba(15, 23, 42, 0.12);
-	--color-glint: rgba(255, 255, 255, 0.82);
-	--color-kicker: rgba(37, 99, 235, 0.85);
+	--color-surface: #ffffff;
+	--color-surface-strong: #ffffff;
+	--color-line: #0f172a;
+	--color-glint: #ffffff;
+	--color-kicker: #2563eb;
 	--color-canvas: #eef2fb;
-	--color-header: rgba(250, 251, 255, 0.84);
-	--color-chip: rgba(255, 255, 255, 0.8);
-	--color-chip-line: rgba(37, 99, 235, 0.18);
-	--color-link-hover: rgba(255, 255, 255, 0.9);
-	--color-aurora-a: rgba(37, 99, 235, 0.24);
-	--color-aurora-b: rgba(124, 58, 237, 0.16);
+	--color-header: #fafbff;
+	--color-chip: #ffffff;
+	--color-chip-line: #2563eb;
+	--color-link-hover: #ffffff;
+	--color-aurora-a: #2563eb;
+	--color-aurora-b: #7c3aed;
 	--color-danger: #b91c1c;
 	--color-warning: #b45309;
 }
@@ -42,18 +42,18 @@
 		--color-violet: #a78bfa;
 		--color-sand: #0b1220;
 		--color-foam: #0e1730;
-		--color-surface: rgba(15, 23, 42, 0.78);
-		--color-surface-strong: rgba(9, 14, 28, 0.92);
-		--color-line: rgba(148, 163, 184, 0.18);
-		--color-glint: rgba(147, 197, 253, 0.14);
+		--color-surface: #0f172a;
+		--color-surface-strong: #090e1c;
+		--color-line: #94a3b8;
+		--color-glint: #91c3fd;
 		--color-kicker: #93c5fd;
 		--color-canvas: #0a0f1f;
-		--color-header: rgba(10, 15, 31, 0.82);
-		--color-chip: rgba(13, 20, 38, 0.9);
-		--color-chip-line: rgba(96, 165, 250, 0.24);
-		--color-link-hover: rgba(20, 28, 50, 0.82);
-		--color-aurora-a: rgba(59, 130, 246, 0.28);
-		--color-aurora-b: rgba(139, 92, 246, 0.2);
+		--color-header: #0a0f1f;
+		--color-chip: #0d1426;
+		--color-chip-line: #60a5fa;
+		--color-link-hover: #141c32;
+		--color-aurora-a: #3b82f6;
+		--color-aurora-b: #8b5cf6;
 		--color-danger: #f87171;
 		--color-warning: #fbbf24;
 	}
@@ -152,7 +152,23 @@ pre code {
 }
 
 .playing-card {
-	@apply border-line bg-surface-strong shadow-blue-950/15 rounded-2xl border p-4 shadow-lg;
+	@apply border-line/35 bg-foam shadow-blue-950/15 rounded-2xl border-2 p-0 shadow-lg;
+}
+
+/* Light theme: the watermark's white background vanishes into the light
+   card via multiply, leaving just its dark strokes. Multiply can only ever
+   darken, so against a dark card it just goes black-on-near-black — invert
+   the source then switch to screen (multiply's lightening mirror) so the
+   same strokes show up bright against the dark card instead. */
+.card-watermark {
+	mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+	.card-watermark {
+		filter: invert(1);
+		mix-blend-mode: screen;
+	}
 }
 
 .heading-lg {

@@ -1,3 +1,4 @@
+import { IconChevronRight, IconLayoutGrid } from "@tabler/icons-react";
 import { ParticipantManagementList } from "#/features/participants/presentation/ui/ParticipantManagementList";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { RoomInfoTab } from "#/features/room/presentation/ui/RoomInfoTab";
@@ -32,12 +33,25 @@ export function RoomControlIsland({
   return (
     <Modal>
       <div className="rise-in flex justify-start">
-        <ModalTrigger className="w-full border-line bg-header shadow-ink/20 flex items-center gap-3 rounded-xl border px-4 py-2.5 text-left shadow-2xl backdrop-blur-xl">
-          <span className="text-left">
-            <Kicker className="block">Código de sala</Kicker>
-            <span className="text-ink text-lg font-bold tracking-[0.2em]">
-              {code}
+        <ModalTrigger className="w-full border-line/15 bg-header/85 group flex flex-col gap-3 rounded-2xl border px-4 py-3.5 text-left shadow-[0_20px_45px_-15px_rgba(15,23,42,0.25),0_10px_35px_-10px_rgba(37,99,235,0.35)] backdrop-blur-xl transition hover:-translate-y-0.5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-deep">
+          <span className="flex items-center gap-3">
+            <span className="border-blue/40 text-blue flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border">
+              <IconLayoutGrid aria-hidden="true" className="h-5 w-5" />
             </span>
+            <span className="flex-1 text-left">
+              <Kicker className="block">Código de sala</Kicker>
+              <span className="text-ink text-lg font-bold tracking-[0.2em]">
+                {code}
+              </span>
+            </span>
+            <IconChevronRight
+              aria-hidden="true"
+              className="text-ink-soft h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </span>
+          <span className="border-line/25 border-t border-dashed" />
+          <span className="text-ink-soft text-xs">
+            Comparte este código para que otros se unan.
           </span>
         </ModalTrigger>
       </div>

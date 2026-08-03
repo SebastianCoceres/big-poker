@@ -80,7 +80,7 @@ export function ParticipantBar({ snapshot }: { snapshot: RoomSnapshot }) {
 			<motion.div
 				layout
 				transition={ISLAND_SPRING}
-				className="border-line bg-header shadow-ink/20 pointer-events-auto flex w-fit max-w-full flex-col rounded-full border shadow-2xl backdrop-blur-xl"
+				className="border-line/15 bg-header/85 shadow-ink/20 pointer-events-auto flex w-fit max-w-full flex-col rounded-full border shadow-2xl backdrop-blur-xl"
 			>
 				<AnimatePresence initial={false}>
 					{expanded && overflow.length > 0 && (

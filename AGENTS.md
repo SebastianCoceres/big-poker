@@ -52,6 +52,12 @@ Not configured. `pnpm build` produces `dist/client` and `dist/server` (SSR-capab
 - `--agent` is a valid but hidden CLI flag (telemetry only: marks the invocation as agent-originated); it does not change scaffold output.
 - Skipped toolchain and deployment selection entirely rather than guessing — left for a future explicit decision.
 
+### Styling conventions
+
+- Color tokens in `src/styles.css` (`@theme` block and its `@media (prefers-color-scheme: dark)` override) are **always solid hex, never `rgba()`/alpha**. This is a deliberate, explicit decision — do not reintroduce transparency there.
+- When a specific component needs translucency (e.g. a frosted-glass "island" surface whose `backdrop-blur-xl` needs something to actually show through), apply it locally with Tailwind's opacity modifier on the utility class — `bg-header/85`, `border-line/15` — never by editing the shared `--color-*` token back to `rgba(...)`. Editing the token affects every bordered/surfaced component in the app (buttons, fields, chips, code, cards), not just the one that needed it.
+- Precedent for this exact scoped-opacity pattern already exists in the codebase: `shadow-ink/20` on `RoomControlIsland`/`ParticipantBar` predates this rule.
+
 ### Gotchas
 
 - `pnpm` field `onlyBuiltDependencies` in `package.json` triggers a pnpm warning ("no longer read by pnpm") on every install/dev/build — pnpm has moved this setting elsewhere; harmless but noisy. Not fixed here since it was CLI-generated and out of scope for a blank scaffold.

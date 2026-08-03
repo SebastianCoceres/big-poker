@@ -1,4 +1,4 @@
-export const FIBONACCI_SCALE = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89] as const;
+export const FIBONACCI_SCALE = [0, 1, 2, 3, 5, 8, 13, 21] as const;
 export type NumericCard = (typeof FIBONACCI_SCALE)[number];
 
 export const SPECIAL_CARDS = ["?", "☕"] as const;
