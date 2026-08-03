@@ -2,6 +2,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { PokerEasterEgg } from "#/shared/ui/PokerEasterEgg";
+import { ServiceWorkerRegistration } from "#/shared/ui/ServiceWorkerRegistration";
 
 import appCss from "../styles.css?url";
 
@@ -22,11 +23,36 @@ export const Route = createRootRoute({
 			{
 				title: "BigPoker",
 			},
+			{
+				name: "theme-color",
+				content: "#2563eb",
+			},
+			{
+				name: "apple-mobile-web-app-capable",
+				content: "yes",
+			},
+			{
+				name: "apple-mobile-web-app-status-bar-style",
+				content: "default",
+			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "manifest",
+				href: "/manifest.webmanifest",
+			},
+			{
+				rel: "icon",
+				type: "image/png",
+				href: "/icons/icon-192.png",
+			},
+			{
+				rel: "apple-touch-icon",
+				href: "/icons/apple-touch-icon.png",
 			},
 		],
 	}),
@@ -43,6 +69,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="font-sans antialiased wrap-anywhere selection:bg-aurora-a">
 				{children}
 				<PokerEasterEgg />
+				<ServiceWorkerRegistration />
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",
