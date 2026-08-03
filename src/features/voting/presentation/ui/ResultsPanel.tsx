@@ -1,4 +1,4 @@
-import { IconHandClick } from "@tabler/icons-react";
+import { IconHandClick, IconSparkle } from "@tabler/icons-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
@@ -142,18 +142,46 @@ export function ResultsPanel({
 						</p>
 					) : average !== null ? (
 						<div
-							className="rise-in flex flex-col items-center gap-1"
+							className="rise-in relative flex items-center justify-center"
 							style={{ animationDelay: "120ms" }}
 						>
-							<Kicker className="text-muted">Sugerencia (promedio)</Kicker>
-							<AnimatedResultNumber
-								value={average}
-								roundId={snapshot.roundId}
-								className="text-3xl sm:text-4xl"
+							<IconSparkle
+								aria-hidden
+								className="text-blue absolute top-0 left-0 size-4 -translate-x-6 -translate-y-1"
 							/>
-							<span className="text-muted text-sm">
-								{voteCount} voto{voteCount === 1 ? "" : "s"}
-							</span>
+							<IconSparkle
+								aria-hidden
+								className="text-blue/40 absolute bottom-1 left-3 size-2 -translate-x-8"
+							/>
+							<IconSparkle
+								aria-hidden
+								className="text-blue absolute top-1 right-0 size-4 translate-x-6"
+							/>
+							<IconSparkle
+								aria-hidden
+								className="text-blue/40 absolute bottom-0 right-3 size-2 translate-x-8"
+							/>
+							<div className="border-line/10 bg-surface flex flex-col items-center gap-2 rounded-2xl border px-6 py-4 shadow-lg shadow-blue-950/10">
+								<Kicker>Sugerencia (promedio)</Kicker>
+								<div className="flex items-center gap-3">
+									<div className="border-blue flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2">
+										<AnimatedResultNumber
+											value={average}
+											roundId={snapshot.roundId}
+											// AnimatedResultNumber's default size includes a
+											// `sm:text-7xl` bump that twMerge won't drop just
+											// because we pass a plain `text-2xl` — same utility,
+											// different variant, so both can "win" depending on
+											// viewport. Override both explicitly.
+											className="text-2xl sm:text-2xl"
+										/>
+									</div>
+									<span className="bg-line/25 h-8 w-px" />
+									<span className="text-muted text-sm">
+										{voteCount} voto{voteCount === 1 ? "" : "s"}
+									</span>
+								</div>
+							</div>
 						</div>
 					) : (
 						<p className="text-muted text-sm">
