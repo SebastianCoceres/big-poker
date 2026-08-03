@@ -82,6 +82,14 @@ interface StackProps {
 	// given (stable across re-ordering), so the caller can map it back to
 	// its own data.
 	onFrontCardClick?: (index: number) => void;
+	// Which card (by that same index) should render lifted — only applied
+	// while it's also the front card, so a card that's been dragged away
+	// never visually pokes up out of the stack.
+	armedIndex?: number | null;
+	// Fires when the front card is sent to back by a real drag (never by a
+	// click) — lets the caller clear its own armed state before this index
+	// is reused for a now-buried card.
+	onFrontCardDragAway?: (index: number) => void;
 }
 
 export default function Stack({
@@ -96,6 +104,8 @@ export default function Stack({
 	mobileClickOnly = false,
 	mobileBreakpoint = 768,
 	onFrontCardClick,
+	armedIndex = null,
+	onFrontCardDragAway,
 }: StackProps) {
 	const [isMobile, setIsMobile] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
@@ -155,10 +165,14 @@ export default function Stack({
 			{stack.map((card, index) => {
 				const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
 				const isFront = index === stack.length - 1;
+				const isArmed = isFront && armedIndex === card.id - 1;
 				return (
 					<CardRotate
 						key={card.id}
-						onSendToBack={() => sendToBack(card.id)}
+						onSendToBack={() => {
+							sendToBack(card.id);
+							if (isFront) onFrontCardDragAway?.(card.id - 1);
+						}}
 						sensitivity={sensitivity}
 						disableDrag={shouldDisableDrag}
 					>
@@ -170,7 +184,8 @@ export default function Stack({
 							}}
 							animate={{
 								rotateZ: (stack.length - index - 1) * 4 + randomRotate,
-								scale: 1 + index * 0.06 - stack.length * 0.06,
+								scale: isArmed? 1.2 :(1 + index * 0.06 - stack.length * 0.06),
+								y: isArmed ? -50 : 0,
 								transformOrigin: "90% 90%",
 							}}
 							initial={false}

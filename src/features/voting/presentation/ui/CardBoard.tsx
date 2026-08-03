@@ -58,6 +58,7 @@ export function CardBoard({
 }) {
 	const [sendState, setSendState] = useState<SendState>("idle");
 	const [lastAttempt, setLastAttempt] = useState<CardValue | null>(null);
+	const [armedIndex, setArmedIndex] = useState<number | null>(null);
 
 	const me = snapshot.participants.find((p) => p.id === participantId);
 	// The snapshot always reveals MY OWN vote to me (never anyone else's
@@ -101,18 +102,25 @@ export function CardBoard({
 
 	function handleFrontCardClick(index: number) {
 		if (sendState === "sending") return;
-		pick(STACK_ORDER[index]);
+		if (armedIndex === index) {
+			// Second tap on the still-armed front card: confirm and submit.
+			setArmedIndex(null);
+			pick(STACK_ORDER[index]);
+			return;
+		}
+		// First tap: arm/lift, don't submit yet.
+		setArmedIndex(index);
+	}
+
+	function handleFrontCardDragAway(index: number) {
+		setArmedIndex((current) => (current === index ? null : current));
 	}
 
 	return (
 		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-4">
 			<div className="w-full text-center">
 				<h2 className="heading-sm">{snapshot.question}</h2>
-				{myVote !== null && (
-					<p className="text-muted mt-1 text-sm">
-						Tu voto: <strong className="text-ink">{myVote}</strong>
-					</p>
-				)}
+
 			</div>
 			{sendState === "error" && (
 				<p className="text-danger flex items-center gap-2 text-sm">
@@ -130,10 +138,24 @@ export function CardBoard({
 				<Stack
 					cards={stackCards}
 					onFrontCardClick={handleFrontCardClick}
+					onFrontCardDragAway={handleFrontCardDragAway}
+					armedIndex={armedIndex}
 					sensitivity={100}
 					randomRotation
 				/>
 			</div>
+			{armedIndex !== null ? (
+				<p className="text-muted mt-1 text-sm">
+					Tocá de nuevo para confirmar tu{" "}
+					<strong className="text-ink">{STACK_ORDER[armedIndex]}</strong>
+				</p>
+			) : (
+				myVote !== null && (
+					<p className="text-muted mt-1 text-sm">
+						Tu voto: <strong className="text-ink">{myVote}</strong>
+					</p>
+				)
+			)}
 		</div>
 	);
 }
