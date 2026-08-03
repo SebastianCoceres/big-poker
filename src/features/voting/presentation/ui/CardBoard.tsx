@@ -3,6 +3,7 @@ import bigtechLogo from "#/assets/bigtechlogo.png";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { CARD_VALUES, type CardValue } from "#/features/voting/domain/entities";
 import { castVoteFn } from "#/features/voting/infrastructure/voting.controllers";
+import { Button } from "#/shared/ui/Button";
 import Stack from "#/shared/ui/Stack";
 
 type SendState = "idle" | "sending" | "error";
@@ -102,13 +103,8 @@ export function CardBoard({
 
 	function handleFrontCardClick(index: number) {
 		if (sendState === "sending") return;
-		if (armedIndex === index) {
-			// Second tap on the still-armed front card: confirm and submit.
-			setArmedIndex(null);
-			pick(STACK_ORDER[index]);
-			return;
-		}
-		// First tap: arm/lift, don't submit yet.
+		// Arm/lift the tapped card — submitting now happens via the
+		// "Confirmar" button, not a second tap.
 		setArmedIndex(index);
 	}
 
@@ -116,11 +112,17 @@ export function CardBoard({
 		setArmedIndex((current) => (current === index ? null : current));
 	}
 
+	function handleConfirm() {
+		if (armedIndex === null || sendState === "sending") return;
+		const index = armedIndex;
+		setArmedIndex(null);
+		pick(STACK_ORDER[index]);
+	}
+
 	return (
 		<div className="rise-in flex flex-1 flex-col items-center justify-center gap-4">
 			<div className="w-full text-center">
 				<h2 className="heading-sm">{snapshot.question}</h2>
-
 			</div>
 			{sendState === "error" && (
 				<p className="text-danger flex items-center gap-2 text-sm">
@@ -145,10 +147,15 @@ export function CardBoard({
 				/>
 			</div>
 			{armedIndex !== null ? (
-				<p className="text-muted mt-1 text-sm">
-					Tocá de nuevo para confirmar tu{" "}
-					<strong className="text-ink">{STACK_ORDER[armedIndex]}</strong>
-				</p>
+				<div className="flex flex-col items-center gap-2">
+					<p className="text-muted text-sm">
+						Elegiste{" "}
+						<strong className="text-ink">{STACK_ORDER[armedIndex]}</strong>
+					</p>
+					<Button onClick={handleConfirm} disabled={sendState === "sending"}>
+						Confirmar
+					</Button>
+				</div>
 			) : (
 				myVote !== null && (
 					<p className="text-muted mt-1 text-sm">

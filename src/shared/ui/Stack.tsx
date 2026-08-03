@@ -184,7 +184,7 @@ export default function Stack({
 							}}
 							animate={{
 								rotateZ: (stack.length - index - 1) * 4 + randomRotate,
-								scale: isArmed? 1.2 :(1 + index * 0.06 - stack.length * 0.06),
+								scale: isArmed ? 1.2 : 1 + index * 0.06 - stack.length * 0.06,
 								y: isArmed ? -50 : 0,
 								transformOrigin: "90% 90%",
 							}}
