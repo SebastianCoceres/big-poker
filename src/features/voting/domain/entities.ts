@@ -20,4 +20,5 @@ export interface RoundResults {
 	average: NumericCard | null;
 	blocked: boolean;
 	voteCount: number;
+	distinctVotes: CardValue[];
 }

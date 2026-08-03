@@ -12,5 +12,6 @@ export interface VoteScorer {
 		average: number | null;
 		blocked: boolean;
 		voteCount: number;
+		distinctVotes: (string | number)[];
 	};
 }

@@ -1,4 +1,5 @@
 import {
+	CARD_VALUES,
 	type CardValue,
 	FIBONACCI_SCALE,
 	type NumericCard,
@@ -23,11 +24,20 @@ export function roundUpToFibonacci(value: number): NumericCard {
 	return FIBONACCI_SCALE.find((f) => f >= value) ?? max;
 }
 
+// Ordered by CARD_VALUES (ascending scale, then specials) rather than by
+// first-seen order, so the "cards in dispute" row always renders the same
+// layout regardless of who voted first.
+function distinctVotesInCardOrder(votes: CardValue[]): CardValue[] {
+	const cast = new Set(votes);
+	return CARD_VALUES.filter((card) => cast.has(card));
+}
+
 export function computeResults(votes: CardValue[]): RoundResults {
+	const distinctVotes = distinctVotesInCardOrder(votes);
 	if (votes.length === 0)
-		return { average: null, blocked: false, voteCount: 0 };
+		return { average: null, blocked: false, voteCount: 0, distinctVotes };
 	if (votes.some((v) => v === "?" || v === "☕")) {
-		return { average: null, blocked: true, voteCount: votes.length };
+		return { average: null, blocked: true, voteCount: votes.length, distinctVotes };
 	}
 	const numeric = votes as NumericCard[];
 	const mean =
@@ -36,5 +46,6 @@ export function computeResults(votes: CardValue[]): RoundResults {
 		average: roundUpToFibonacci(mean),
 		blocked: false,
 		voteCount: numeric.length,
+		distinctVotes,
 	};
 }

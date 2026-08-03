@@ -9,6 +9,7 @@ import { InMemoryRoomRepository } from "#/features/room/infrastructure/in-memory
 import { CastVoteUseCase } from "#/features/voting/application/use-cases/cast-vote";
 import { CloseResultUseCase } from "#/features/voting/application/use-cases/close-result";
 import { RevealUseCase } from "#/features/voting/application/use-cases/reveal";
+import { SelectFinalCardUseCase } from "#/features/voting/application/use-cases/select-final-card";
 import { StartRoundUseCase } from "#/features/voting/application/use-cases/start-round";
 import { FibonacciVoteScorer } from "#/features/voting/infrastructure/fibonacci-vote-scorer";
 
@@ -55,6 +56,11 @@ function buildContainer() {
 			voteScorer,
 		),
 		closeResultUseCase: new CloseResultUseCase(
+			roomRepository,
+			roomRealtimeGateway,
+			voteScorer,
+		),
+		selectFinalCardUseCase: new SelectFinalCardUseCase(
 			roomRepository,
 			roomRealtimeGateway,
 			voteScorer,

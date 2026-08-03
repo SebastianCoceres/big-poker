@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import bigtechLogo from "#/assets/bigtechlogo.png";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import { CARD_VALUES, type CardValue } from "#/features/voting/domain/entities";
 import { castVoteFn } from "#/features/voting/infrastructure/voting.controllers";
+import { CardFace } from "#/features/voting/presentation/ui/CardFace";
 import { Button } from "#/shared/ui/Button";
 import Stack from "#/shared/ui/Stack";
 
@@ -15,36 +15,6 @@ const VOTE_TIMEOUT_MS = 8_000;
 // dragging the front card away always reveals the next-higher value, so
 // browsing the deck goes 0 -> 1 -> 2 -> ... -> ☕.
 const STACK_ORDER: CardValue[] = [...CARD_VALUES].reverse();
-
-function CardFace({ value }: { value: CardValue }) {
-	return (
-		<div className="playing-card text-ink isolate relative flex h-full w-full select-none flex-col items-center justify-center overflow-hidden">
-			<div
-				aria-hidden
-				className="card-watermark pointer-events-none absolute"
-				style={{
-					inset: "-50%",
-					transform: "rotate(-18deg)",
-					backgroundImage: `url(${bigtechLogo})`,
-					backgroundRepeat: "repeat",
-					backgroundSize: "90px auto",
-					opacity: 0.4,
-				}}
-			/>
-			<span className="absolute top-2 left-2 flex flex-col items-start gap-1">
-				<span className="text-base leading-none font-bold">{value}</span>
-				<span className="bg-blue h-2 w-2 rounded-xs" />
-			</span>
-			<span className="absolute right-2 bottom-2 flex rotate-180 flex-col items-start gap-1">
-				<span className="text-base leading-none font-bold">{value}</span>
-				<span className="bg-blue h-2 w-2 rounded-xs" />
-			</span>
-			<span className="border-blue bg-white text-slate-900 relative flex h-20 w-20 items-center justify-center rounded-full border-2 text-3xl font-bold">
-				{value}
-			</span>
-		</div>
-	);
-}
 
 // Only ever rendered while snapshot.status === "voting" (the parent route
 // unmounts it otherwise) — no "revealed/disabled" branch needed here.
@@ -136,7 +106,7 @@ export function CardBoard({
 					</button>
 				</p>
 			)}
-			<div className="h-56 w-40">
+			<div className="h-72 w-50">
 				<Stack
 					cards={stackCards}
 					onFrontCardClick={handleFrontCardClick}

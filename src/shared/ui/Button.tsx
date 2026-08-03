@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 export const buttonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border px-4 py-3 text-sm leading-none font-bold transition hover:-translate-y-0.5 hover:brightness-90 disabled:pointer-events-none disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55",
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border px-4 py-3 text-sm leading-none font-bold no-underline transition hover:-translate-y-0.5 hover:brightness-90 disabled:pointer-events-none disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55",
   {
     variants: {
       variant: {

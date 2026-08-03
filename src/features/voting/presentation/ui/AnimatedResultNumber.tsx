@@ -1,5 +1,6 @@
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { FIBONACCI_SCALE } from "#/features/voting/domain/entities";
 
 const CYCLE_DURATION_MS = 700;
@@ -8,12 +9,14 @@ const CYCLE_INTERVAL_MS = 110;
 export function AnimatedResultNumber({
 	value,
 	roundId,
+	className,
 }: {
 	// snapshot.results.average is typed as `number | null` on RoomSnapshot
 	// (broader than the NumericCard union RoundResults uses server-side) — kept
 	// as `number` here to match what actually arrives from the snapshot.
 	value: number;
 	roundId: string;
+	className?: string;
 }) {
 	const [display, setDisplay] = useState<number>(value);
 
@@ -45,7 +48,10 @@ export function AnimatedResultNumber({
 			value={display}
 			willChange
 			trend={1}
-			className="display-title text-blue-deep text-6xl font-bold leading-none sm:text-7xl"
+			className={cn(
+				"display-title text-blue-deep text-6xl font-bold leading-none sm:text-7xl",
+				className,
+			)}
 		/>
 	);
 }

@@ -16,6 +16,11 @@ function requireCardValue(value: unknown): CardValue {
 	return value as CardValue;
 }
 
+function requireNumber(value: unknown, field: string): number {
+	if (typeof value !== "number") throw new Error(`${field} must be a number`);
+	return value;
+}
+
 export const startRoundFn = createServerFn({ method: "POST" })
 	.validator(
 		(data: { code: string; participantId: string; question: string }) => ({
@@ -71,4 +76,27 @@ export const closeResultFn = createServerFn({ method: "POST" })
 	}))
 	.handler(async ({ data }) =>
 		container.closeResultUseCase.execute(data.code, data.participantId),
+	);
+
+export const selectFinalCardFn = createServerFn({ method: "POST" })
+	.validator(
+		(data: {
+			code: string;
+			participantId: string;
+			roundId: string;
+			card: unknown;
+		}) => ({
+			code: requireString(data.code, "code"),
+			participantId: requireString(data.participantId, "participantId"),
+			roundId: requireString(data.roundId, "roundId"),
+			card: requireNumber(data.card, "card"),
+		}),
+	)
+	.handler(async ({ data }) =>
+		container.selectFinalCardUseCase.execute(
+			data.code,
+			data.participantId,
+			data.roundId,
+			data.card,
+		),
 	);

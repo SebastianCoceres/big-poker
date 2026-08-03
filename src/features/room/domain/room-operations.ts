@@ -43,6 +43,29 @@ export function castVote(
 	return { ok: true, data: undefined };
 }
 
+export function selectFinalCard(
+	room: Room,
+	participantId: string,
+	card: number,
+): Result<void> {
+	if (room.masterId !== participantId) {
+		return { ok: false, error: "NOT_MASTER" };
+	}
+	// Only numeric votes are eligible — "?"/"☕" mean "can't estimate yet",
+	// not a candidate for the team's agreed number.
+	const numericVotes = new Set(
+		[...room.participants.values()]
+			.map((p) => p.vote)
+			.filter((v): v is number => typeof v === "number"),
+	);
+	if (!numericVotes.has(card)) {
+		return { ok: false, error: "INVALID_FINAL_CARD" };
+	}
+	room.finalCard = card;
+	room.lastActivityAt = Date.now();
+	return { ok: true, data: undefined };
+}
+
 export function kickParticipant(
 	room: Room,
 	requesterId: string,

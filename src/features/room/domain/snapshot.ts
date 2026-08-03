@@ -21,6 +21,7 @@ export function buildSnapshot(
 		average: number | null;
 		blocked: boolean;
 		voteCount: number;
+		distinctVotes: (string | number)[];
 	} | null,
 	viewerId?: string,
 ): RoomSnapshot {
@@ -41,5 +42,6 @@ export function buildSnapshot(
 		masterId: room.masterId,
 		participants,
 		results,
+		finalCard: room.finalCard,
 	};
 }

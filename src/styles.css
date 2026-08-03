@@ -124,14 +124,6 @@ body::before {
 		);
 }
 
-a {
-	@apply text-blue-deep underline decoration-blue/40 underline-offset-2;
-}
-
-a:hover {
-	@apply text-blue-deep brightness-90;
-}
-
 code {
 	@apply border-line bg-surface-strong text-ink rounded-md border px-1.5 py-0.5 text-[0.9em];
 }

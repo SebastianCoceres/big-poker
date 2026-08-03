@@ -27,6 +27,11 @@ export interface Room {
 	status: RoundStatus;
 	roundId: string;
 	participants: Map<string, RoomMember>;
+	// The team's agreed-upon number after discussing the votes in dispute —
+	// distinct from `results.average`, which is only ever a suggestion. Only
+	// numeric (never "?"/"☕"), and only ever one of that round's actual votes
+	// — see room-operations.ts's selectFinalCard.
+	finalCard: number | null;
 }
 
 export interface RoomSnapshot {
@@ -47,5 +52,7 @@ export interface RoomSnapshot {
 		average: number | null;
 		blocked: boolean;
 		voteCount: number;
+		distinctVotes: (string | number)[];
 	} | null;
+	finalCard: number | null;
 }

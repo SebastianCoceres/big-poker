@@ -7,11 +7,11 @@ import {
 	broadcastRoomSnapshot,
 	snapshotWithConnections,
 } from "#/features/room/application/snapshot-broadcast";
-import { cleanText } from "#/features/room/application/text";
 import type { RoomSnapshot } from "#/features/room/domain/entities";
 import type { Result } from "#/features/room/domain/result";
+import { selectFinalCard } from "#/features/room/domain/room-operations";
 
-export class StartRoundUseCase {
+export class SelectFinalCardUseCase {
 	constructor(
 		private readonly rooms: RoomRepository,
 		private readonly realtime: RoomRealtimeGateway,
@@ -21,23 +21,22 @@ export class StartRoundUseCase {
 	execute(
 		code: string,
 		participantId: string,
-		question: string,
+		roundId: string,
+		card: number,
 	): Result<RoomSnapshot> {
 		const room = this.rooms.findByCode(code);
 		if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
-		if (room.masterId !== participantId) {
-			return { ok: false, error: "NOT_MASTER" };
+
+		// Picking a final card only makes sense once the round is revealed and
+		// only for the round the caller actually saw — same staleness guard as
+		// cast-vote.ts, mirrored to the "revealed" phase instead of "voting".
+		if (room.status !== "revealed" || room.roundId !== roundId) {
+			return { ok: false, error: "STALE_ROUND" };
 		}
 
-		const cleanQuestion = cleanText(question, 300);
-		if (!cleanQuestion) return { ok: false, error: "INVALID_QUESTION" };
+		const result = selectFinalCard(room, participantId, card);
+		if (!result.ok) return result;
 
-		room.question = cleanQuestion;
-		room.status = "voting";
-		room.roundId = crypto.randomUUID();
-		room.finalCard = null;
-		for (const p of room.participants.values()) p.vote = null;
-		room.lastActivityAt = Date.now();
 		this.rooms.save(room);
 		broadcastRoomSnapshot(this.realtime, room, this.voteScorer);
 		return {

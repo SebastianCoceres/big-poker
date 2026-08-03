@@ -10,6 +10,7 @@ import { InMemoryRoomRepository } from "#/features/room/infrastructure/in-memory
 import { CastVoteUseCase } from "#/features/voting/application/use-cases/cast-vote";
 import { CloseResultUseCase } from "#/features/voting/application/use-cases/close-result";
 import { RevealUseCase } from "#/features/voting/application/use-cases/reveal";
+import { SelectFinalCardUseCase } from "#/features/voting/application/use-cases/select-final-card";
 import { StartRoundUseCase } from "#/features/voting/application/use-cases/start-round";
 import type { CardValue } from "#/features/voting/domain/entities";
 import { FibonacciVoteScorer } from "#/features/voting/infrastructure/fibonacci-vote-scorer";
@@ -65,6 +66,18 @@ export function createHarness() {
 			new CloseResultUseCase(rooms, realtime, voteScorer).execute(
 				code,
 				participantId,
+			),
+		selectFinalCard: (
+			code: string,
+			participantId: string,
+			roundId: string,
+			card: number,
+		) =>
+			new SelectFinalCardUseCase(rooms, realtime, voteScorer).execute(
+				code,
+				participantId,
+				roundId,
+				card,
 			),
 		leaveRoom: (code: string, participantId: string) =>
 			new LeaveRoomUseCase(rooms, realtime, voteScorer).execute(

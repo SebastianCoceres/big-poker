@@ -32,6 +32,7 @@ export class CreateRoomUseCase {
 			question: null,
 			status: "waiting",
 			roundId: crypto.randomUUID(),
+			finalCard: null,
 			participants: new Map([
 				[
 					participantId,
