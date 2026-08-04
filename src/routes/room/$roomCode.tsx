@@ -75,8 +75,12 @@ function RoomPage() {
 	return (
 		<>
 			{/* pb reserves room for the fixed ParticipantBar below so the last
-			    section never sits underneath it. */}
-			<main className="page-wrap flex h-dvh flex-col gap-4 px-4 pb-32 pt-6">
+			    section never sits underneath it — has to add the safe-area inset
+			    on top of the flat 8rem (not just rely on it), since ParticipantBar
+			    itself shifts up by that same inset on notched phones and a flat
+			    value alone falls short there, e.g. on "Resultado final"'s taller
+			    content. */}
+			<main className="page-wrap flex h-dvh flex-col gap-4 px-4 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-6">
 				<ConnectionBanner
 					connectionState={connectionState}
 					snapshot={snapshot}
